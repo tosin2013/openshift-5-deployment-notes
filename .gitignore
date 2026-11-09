@@ -1,0 +1,6 @@
+*.kubeconfig
+kubeconfig
+.env
+*.pem
+pull-secret*
+**/secrets/

@@ -1,0 +1,34 @@
+# OpenShift AI vLLM, weak model.
+# This file does not set spec.featureGates or spec.mcpServers.
+#
+# granite-4-0-h-tiny is the smallest Granite 4 model in the Red Hat AI 3
+# validated catalog (modelcar-granite-4-0-h-tiny). Confirm the id the endpoint
+# actually serves:
+#
+#   curl -k https://REPLACE_WITH_HOST/v1/models
+#
+# Secret key is apitoken. The URL must end in /v1.
+# If the endpoint does not check a token, apitoken still has to be a non-empty string.
+#
+#   oc create secret generic rhoai-api-keys \
+#     --from-literal=apitoken="${RHOAI_API_TOKEN}" \
+#     -n openshift-lightspeed
+#
+# See tls-ca.md for a private CA.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: red_hat_openshift_ai
+        type: rhoai_vllm
+        credentialsSecretRef:
+          name: rhoai-api-keys
+        url: https://REPLACE_WITH_HOST/v1
+        models:
+          - name: granite-4-0-h-tiny
+  ols:
+    defaultProvider: red_hat_openshift_ai
+    defaultModel: granite-4-0-h-tiny

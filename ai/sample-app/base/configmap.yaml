@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-html
+  namespace: troubleshoot-lab
+data:
+  index.html: |
+    hello from troubleshoot-lab

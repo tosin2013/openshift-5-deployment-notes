@@ -1,0 +1,20 @@
+# Chart 0.3.0. Pass the route host with --set ingress.host=mcp-server.<apps-domain>
+openshift: true
+
+ingress:
+  host: mcp-server.apps.example.com
+  termination: edge
+
+rbac:
+  extraClusterRoleBindings:
+    - name: use-view-role
+      roleRef:
+        name: view
+        external: true
+
+config:
+  port: "8080"
+  toolsets:
+    - core
+    - config
+  read_only: true

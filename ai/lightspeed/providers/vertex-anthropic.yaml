@@ -1,0 +1,30 @@
+# Claude hosted on Vertex AI. Same service-account secret shape as Gemini.
+#
+#   oc create secret generic llmcreds \
+#     --from-file=gcp-service-account.json=/path/to/service-account-key.json \
+#     -n openshift-lightspeed
+#
+# location and the model name must be a Vertex region and model your project can call.
+# Checked 2026-10-21. The Lightspeed 1.0 example still says claude-3-sonnet in
+# us-east4. Anthropic's current Vertex id for Sonnet 4.6 is claude-sonnet-4-6,
+# and the current client examples use location global.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: google-anthropic
+        type: google_vertex_anthropic
+        credentialsSecretRef:
+          name: llmcreds
+        credentialKey: gcp-service-account.json
+        googleVertexAnthropicConfig:
+          projectID: REPLACE_WITH_GCP_PROJECT
+          location: global
+        models:
+          - name: claude-sonnet-4-6
+  ols:
+    defaultModel: claude-sonnet-4-6
+    defaultProvider: google-anthropic

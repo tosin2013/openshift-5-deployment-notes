@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: troubleshoot-lab
+  labels:
+    app.kubernetes.io/name: troubleshoot-lab
+    app.kubernetes.io/part-of: openshift-5-notes

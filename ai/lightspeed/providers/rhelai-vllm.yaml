@@ -1,0 +1,26 @@
+# Secret key is apitoken. The URL must end in /v1, for example https://host:8000/v1.
+# The model id keeps the models/ prefix from the product example.
+# If the endpoint does not check a token, apitoken still has to be a non-empty string.
+#
+#   oc create secret generic rhelai-api-keys \
+#     --from-literal=apitoken="${RHELAI_API_TOKEN}" \
+#     -n openshift-lightspeed
+#
+# See tls-ca.md for a private CA.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: rhelai
+        type: rhelai_vllm
+        credentialsSecretRef:
+          name: rhelai-api-keys
+        url: https://REPLACE_WITH_HOST/v1
+        models:
+          - name: models/REPLACE_WITH_MODEL
+  ols:
+    defaultProvider: rhelai
+    defaultModel: models/REPLACE_WITH_MODEL

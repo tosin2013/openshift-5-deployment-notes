@@ -1,0 +1,24 @@
+# Secret key is apitoken. Model ids use the ibm/ prefix from the product example.
+# Watsonx does not accept spec.ols.additionalCAConfigMapRef. See tls-ca.md.
+#
+#   oc create secret generic watsonx-api-keys \
+#     --from-literal=apitoken="${WATSONX_API_KEY}" \
+#     -n openshift-lightspeed
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: watsonx
+        type: watsonx
+        credentialsSecretRef:
+          name: watsonx-api-keys
+        url: https://REPLACE_WITH_WATSONX_HOST
+        projectID: REPLACE_WITH_PROJECT_ID
+        models:
+          - name: ibm/REPLACE_WITH_MODEL
+  ols:
+    defaultModel: ibm/REPLACE_WITH_MODEL
+    defaultProvider: watsonx

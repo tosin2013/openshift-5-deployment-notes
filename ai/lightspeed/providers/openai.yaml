@@ -1,0 +1,25 @@
+# Secret key is apitoken. Pass the raw token; Kubernetes stores it encoded.
+#
+#   oc create secret generic openai \
+#     --from-literal=apitoken="${OPENAI_API_TOKEN}" \
+#     -n openshift-lightspeed
+#
+# A private CA for this endpoint is spec.ols.additionalCAConfigMapRef.
+# See tls-ca.md.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: openai
+        type: openai
+        credentialsSecretRef:
+          name: openai
+        url: https://api.openai.com/v1
+        models:
+          - name: REPLACE_WITH_MODEL
+  ols:
+    defaultModel: REPLACE_WITH_MODEL
+    defaultProvider: openai

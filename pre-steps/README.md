@@ -24,7 +24,18 @@ VERSION=5.0.1 ./configure-openshift-packages.sh -i
 ./configure-openshift-packages.sh -i --ccoctl --opm
 ```
 
-Helm, `rosa`, `butane`, `coreos-installer`, and `mirror-registry` are not in the release directory. Helm is the optional command in [OpenShift on AWS](../aws/README.md). `oc` on OpenShift 5 includes kustomize. The installer curl is in [Installer binary](../configure-installers/README.md). `oc-mirror` is not in the `5.0.1` directory. See [todo.md](../todo.md).
+Helm, `rosa`, `butane`, `coreos-installer`, and `mirror-registry` are not in the release directory. [configure-other-clients.sh](configure-other-clients.sh) installs the ones you name. With no version variable, each tool uses the newest numbered directory that contains its file. The directory named `latest` is not used.
+
+```bash
+./configure-other-clients.sh -h
+./configure-other-clients.sh -i --helm
+./configure-other-clients.sh -i --rosa --butane --coreos-installer
+./configure-other-clients.sh -i --mirror-registry
+```
+
+On 9 November 2026 those directories were [cgw/helm/4.3.0](https://mirror.openshift.com/pub/cgw/helm/4.3.0/) (`helm-linux-amd64.tar.gz`), [rosa/1.2.53](https://mirror.openshift.com/pub/openshift-v5/clients/rosa/1.2.53/) (`rosa-linux.tar.gz`), [butane/v0.29.0-1](https://mirror.openshift.com/pub/openshift-v5/clients/butane/v0.29.0-1/), [coreos-installer/v0.21.0-3](https://mirror.openshift.com/pub/openshift-v5/clients/coreos-installer/v0.21.0-3/), and [mirror-registry/1.3.11](https://mirror.openshift.com/pub/openshift-v4/clients/mirror-registry/1.3.11/) (`mirror-registry.tar.gz`, about 695 MB). `openshift-v5/clients/helm/` and `openshift-v5/clients/mirror-registry/` returned 404. [cgw/helm/latest](https://mirror.openshift.com/pub/cgw/helm/latest/) redirected to `3.17.4.2-61`. Pin a directory with `HELM_VERSION`, `ROSA_VERSION`, `BUTANE_VERSION`, `COREOS_INSTALLER_VERSION`, or `MIRROR_REGISTRY_VERSION`.
+
+`--mirror-registry` extracts the archive to `$HOME/mirror-registry`. It does not run `mirror-registry install`. See [Disconnected install](../disconnected-scripts/README.md). `oc` on OpenShift 5 includes kustomize. The installer curl is in [Installer binary](../configure-installers/README.md). `oc-mirror` is not in the `5.0.1` directory. See [todo.md](../todo.md).
 
 On 20 October 2026 one workstation still had `oc` 4.22.18, Helm 4.3.1, and kustomize 5.7.1 bundled in `oc`, talking to a 5.0 server. Replace the client when the 5.0 tarball is the one you intend to use.
 

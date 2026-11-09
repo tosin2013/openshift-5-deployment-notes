@@ -1,0 +1,36 @@
+# Same OLSConfig for an API key or for Microsoft Entra ID. Only the secret keys change.
+#
+# API key (raw token; Kubernetes encodes it):
+#   oc create secret generic azure-api-keys \
+#     --from-literal=apitoken="${AZURE_OPENAI_API_KEY}" \
+#     -n openshift-lightspeed
+#
+# Entra ID. The app registration needs the Cognitive Services OpenAI User role
+# on the Azure OpenAI resource.
+#   oc create secret generic azure-api-keys \
+#     --from-literal=client_id="${AZURE_CLIENT_ID}" \
+#     --from-literal=client_secret="${AZURE_CLIENT_SECRET}" \
+#     --from-literal=tenant_id="${AZURE_TENANT_ID}" \
+#     -n openshift-lightspeed
+#
+# apiVersion here is the Azure OpenAI API version, not the Kubernetes apiVersion.
+# See tls-ca.md for a private CA.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: azure
+        type: azure_openai
+        credentialsSecretRef:
+          name: azure-api-keys
+        apiVersion: REPLACE_WITH_AZURE_API_VERSION
+        deploymentName: REPLACE_WITH_AZURE_DEPLOYMENT
+        url: https://REPLACE_WITH_RESOURCE.openai.azure.com/
+        models:
+          - name: REPLACE_WITH_MODEL
+  ols:
+    defaultModel: REPLACE_WITH_MODEL
+    defaultProvider: azure

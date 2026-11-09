@@ -1,0 +1,41 @@
+# First Gemini test. This file does not set spec.featureGates or spec.mcpServers.
+# introspectionEnabled is omitted, so the operator default (true) stays in effect.
+# Uncomment introspectionEnabled below for a pass that does not read the cluster.
+#
+# Secret (keep the JSON key out of git). The operator reads "apitoken" unless
+# credentialKey is set, so this file names the service-account key explicitly.
+#
+#   oc create secret generic llmcreds \
+#     --from-file=gcp-service-account.json=/path/to/service-account-key.json \
+#     -n openshift-lightspeed
+#
+# Replace projectID with the GCP project. Checked 2026-10-22 with
+# `gcloud ai model-garden models list --model-filter=gemini` on
+# itpc-gcp-global-revenue-claude. gemini-2.5-flash-lite, the id still printed
+# in the Lightspeed 1.0 example, retired on 2026-10-20. This pass uses
+# gemini-4-argon, which Model Garden lists under publishers/google. Location
+# stays global. gemini-3.5-flash-lite and gemini-3.8-flash remain in that list.
+# Applied 2026-10-22 on the 5r2hb sandbox. Uvicorn came up and the health
+# check called gemini-4-argon. Vertex returned 403 aiplatform.endpoints.predict
+# for ols-vertex, so OLSConfig stayed NotReady.
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: google
+        type: google_vertex
+        credentialsSecretRef:
+          name: llmcreds
+        credentialKey: gcp-service-account.json
+        googleVertexConfig:
+          projectID: REPLACE_WITH_GCP_PROJECT
+          location: global
+        models:
+          - name: gemini-4-argon
+  ols:
+    defaultModel: gemini-4-argon
+    defaultProvider: google
+    # introspectionEnabled: false

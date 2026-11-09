@@ -31,9 +31,7 @@ The package script in the OpenShift 4 notes still defaults to `stable-4.15`. The
 `oc` on OpenShift 5 includes kustomize. Install Helm only when you need it outside the cluster:
 
 ```bash
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
+../pre-steps/configure-other-clients.sh -i --helm
 ```
 
 Product docs: [Installation methods](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installing_on_aws/installing-methods-aws) (OpenShift Container Platform 5.0 Installing on AWS). Download, the SSH key, the pull secret, and `create cluster` are in [Installer-provisioned infrastructure](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installing_on_aws/installer-provisioned-infrastructure).

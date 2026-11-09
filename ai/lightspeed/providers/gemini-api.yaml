@@ -1,0 +1,23 @@
+# Gemini API key from Google AI Studio. This is not the Vertex service account.
+# Lightspeed sends it as an OpenAI-compatible client. The base URL is the one
+# in https://ai.google.dev/gemini-api/docs/openai. Default model is gemini-4-argon.
+# Set GEMINI_MODEL when you want a different id from that catalog.
+#
+#   GEMINI_API_KEY=... ./ai/lightspeed/configure-provider.sh gemini-api
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: gemini
+        type: openai
+        credentialsSecretRef:
+          name: gemini-api-keys
+        url: https://generativelanguage.googleapis.com/v1beta/openai
+        models:
+          - name: gemini-4-argon
+  ols:
+    defaultModel: gemini-4-argon
+    defaultProvider: gemini
