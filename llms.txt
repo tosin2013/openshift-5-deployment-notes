@@ -45,7 +45,9 @@
 - [Day-two operations](post-steps/README.md): procedures for the registry, certificates, chrony, cluster resource override, NFS, Quay 3.18, and GitOps
 - [Identity providers](post-steps/identity-providers.md): procedure; HTPasswd and OpenID on the `OAuth` object
 - [Registry](post-steps/README.md#internal-registry-on-openshift-data-foundation): procedure; internal registry on an OpenShift Data Foundation bucket
-- [Certificates](post-steps/README.md#certificates): pointer; the acme.sh script stays in the OpenShift 4 notes
+- [Certificates](post-steps/README.md#certificates): procedure; Route 53 cert-manager issuer for the apps wildcard and the external API name
+- [AWS certificate script](post-steps/create_custom_cert.sh): procedure; explicit Route 53 credentials, then the ingress and API certificates
+- [cert-manager](cert-manager/README.md): procedure; kustomize install of the cert-manager operator on the `stable-v1` channel
 - [Chrony](post-steps/README.md#chrony): procedure; a MachineConfig for chrony, with the Butane version to re-check
 - [Cluster resource override](post-steps/README.md#cluster-resource-override): procedure; one `ClusterResourceOverride` named `cluster`
 - [NFS](post-steps/README.md#nfs): pointer; prefer a CSI driver, and the older provisioner role stays outside this repo
@@ -91,7 +93,7 @@
 - [Release log](releases/README.md): empty table to copy when the lab cluster moves
 - [5.0.0-rc.7](releases/5.0.0-rc.7.md): lab record from 20 October 2026
 - [5.0.0](releases/5.0.0.md): placeholder; the installer tarball is on the mirror, and this file is not a lab read
-- [5.0.1](releases/5.0.1.md): mirror payload only; the 5.0 release notes have no 5.0.1 section
+- [5.0.1](releases/5.0.1.md): lab record of the 10 November 2026 AWS install; the 5.0 release notes have no 5.0.1 section
 
 ## Optional
 

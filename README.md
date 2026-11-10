@@ -34,6 +34,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 * [Identity providers](post-steps/identity-providers.md)
 * [Registry](post-steps/#internal-registry-on-openshift-data-foundation)
 * [Certificates](post-steps/#certificates)
+* [cert-manager](cert-manager/)
 * [Chrony](post-steps/#chrony)
 * [Cluster resource override](post-steps/#cluster-resource-override)
 * [NFS](post-steps/#nfs)
@@ -54,7 +55,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 * [Sample app](ai/sample-app/)
 * [Release log](releases/) for a cluster you built
 * [5.0.0](releases/5.0.0.md) — installer tarball is published under `openshift-v5/clients/ocp/5.0.0/`; this file is not a lab read
-* [5.0.1](releases/5.0.1.md) — payload is on the [5.0.1 mirror directory](https://mirror.openshift.com/pub/openshift-v5/clients/ocp/5.0.1/); the 5.0 release-notes chapter has no 5.0.1 section
+* [5.0.1](releases/5.0.1.md) — AWS lab read from 10 November 2026; the 5.0 release-notes chapter has no 5.0.1 section
 
 ## Guides
 

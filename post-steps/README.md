@@ -31,9 +31,21 @@ Product docs: [Exposing the registry](https://docs.redhat.com/en/documentation/o
 
 ## Certificates
 
-Replace the default ingress certificate, or add an API certificate, from a CA your clients trust. [create_custom_cert.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/create_custom_cert.sh) uses acme.sh and Route 53. It takes an AWS access key, secret key, and email as arguments. Do not commit those. The script was written against OpenShift 4.16. Read it before you run it on 5.0.
+Install the cert-manager operator with the kustomize overlay in [cert-manager](../cert-manager/README.md).
 
-Product docs: [Configuring certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/configuring-certificates).
+[create_custom_cert.sh](create_custom_cert.sh) is the AWS example. It creates a Route 53 `ClusterIssuer` with explicit credentials, then requests a certificate for `*.apps.<cluster>.<base>` and for the external API name. Pass the access key, the secret key, and the email. Do not commit those. The secret stays in the `cert-manager` namespace. The 5.0 sample directory is Let's Encrypt staging. This script uses the production directory unless `ACME_SERVER` is set. acme.sh is the older note's tool.
+
+```bash
+./create_custom_cert.sh aws_access_key_id aws_secret_access_key email
+```
+
+The script runs `oc whoami` before it changes the cluster. When `KUBECONFIG` is unset and `~/.kube/config` is absent, it uses `$HOME/cluster/auth/kubeconfig` from the AWS install.
+
+The script patches `certmanager/cluster` with `--dns01-recursive-nameservers-only` and `--dns01-recursive-nameservers=1.1.1.1:53` because an AWS installer-provisioned cluster also has a private zone for the cluster domain. It then stores the last certificate in the issued chain as `custom-ca` and sets `proxy/cluster` `trustedCA`. That trusted CA update restarts kubelet and CRI-O on each node. The ingress controller secret is `router-certs`. The API secret is `api-cert`, and the named certificate is the external API host.
+
+Product docs: [Configure an ACME issuer by using explicit credentials for AWS Route53](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift) (OpenShift Container Platform 5.0). The ingress and API patches are in [Configuring certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/configuring-certificates).
+
+Check these steps on the build you are installing.
 
 ## Chrony
 

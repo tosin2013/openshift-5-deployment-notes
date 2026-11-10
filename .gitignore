@@ -4,3 +4,4 @@ kubeconfig
 *.pem
 pull-secret*
 **/secrets/
+donotpush.txt
