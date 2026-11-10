@@ -13,7 +13,7 @@
 
 ## Install
 
-- [OpenShift on AWS](aws/README.md): procedure; bastion, AWS CLI, client, and `create cluster` in this repo
+- [OpenShift on AWS](aws/README.md): procedure; bastion, AWS CLI, client, and `create cluster` in this repo, plus the 5.0 user-managed DNS, dual-stack, and interactive-installer firewall options
 - [AWS CLI script](aws/configure-aws-cli.sh): procedure; installs AWS CLI v2 and writes the default profile
 - [AWS installer script](aws/configure-openshift-installer.sh): procedure; runs `openshift-install` against `$HOME/cluster`
 - [OpenShift on bare metal](bare-metal/README.md): procedure; Agent-based Installer or Assisted Installer for most clusters; user-provisioned PXE and HAProxy when you supply them
@@ -67,8 +67,8 @@
 - [RHCOS 10](whats-new/rhcos-10.md): lab record of the node OS and image streams
 - [Kubernetes and runtime](whats-new/kubernetes-and-runtime.md): lab record of Kubernetes 1.36 and crun
 - [Operators and OLM](whats-new/operators-olm.md): lab record of catalogd beside classic OLM
-- [Upgrades from 4](whats-new/upgrades-from-4.md): product path; this lab was a fresh install
-- [Feature gates](whats-new/feature-gates.md): lab record of the default gate set on 5.0.0-rc.7
+- [Upgrades from 4](whats-new/upgrades-from-4.md): product path from 4.22, including the RHCOS 10.2 constraint; this lab was a fresh install
+- [Feature gates](whats-new/feature-gates.md): lab record of the default gate set on 5.0.0-rc.7 and the 10 November 2026 5.0.1 read
 - [OpenShift Lightspeed](ai/lightspeed/README.md): procedure and lab record for the Lightspeed operator
 - [Working cluster](ai/lightspeed/working-cluster.md): lab record of Lightspeed on cluster-84wvf
 - [Agentic troubleshooting](ai/lightspeed/agentic-troubleshooting.md): lab record of alert-driven Lightspeed runs on 28 October 2026
@@ -82,7 +82,7 @@
 - [watsonx provider](ai/lightspeed/providers/watsonx.yaml): procedure; OLSConfig for watsonx
 - [RHEL AI vLLM provider](ai/lightspeed/providers/rhelai-vllm.yaml): procedure; OLSConfig for a RHEL AI vLLM endpoint
 - [OpenShift AI vLLM provider](ai/lightspeed/providers/rhoai-vllm.yaml): procedure; OLSConfig for an OpenShift AI vLLM endpoint
-- [MCP server](ai/mcp-server/README.md): procedure and lab record for the OpenShift MCP server
+- [MCP server](ai/mcp-server/README.md): lab record; the 5.0 release notes call the server generally available, and the MCP chapter still marks the Lifecycle Operator Technology Preview
 - [MCP gateway](ai/mcp-server/gateway.md): lab record of Connectivity Link in front of the MCP servers
 - [MCP read-only values](ai/mcp-server/values-readonly.yaml): procedure; Helm values for a read-only MCP server install
 - [Sample app](ai/sample-app/README.md): procedure; a healthy httpd app and one-fault overlays for troubleshooting

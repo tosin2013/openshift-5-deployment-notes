@@ -10,16 +10,16 @@ Open items for these notes. Check a box when the note exists or the upgrade has 
 - [ ] Re-run the ROSA create path and confirm the current `rosa` flags. The CLI install is in [pre-steps](pre-steps/README.md). The create scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/tree/master/rosa).
 - [ ] Re-run the ARO create path. The full command list stays in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/aro/README.md). On 10 November 2026 a search for an ARO 5.0 install book still did not return one.
 - [x] Write the Agent-based Installer commands in [agent-based/README.md](agent-based/README.md). The commands and both config files are in the note.
-- [ ] Correct the closing paragraph of [whats-new/README.md](whats-new/README.md). It says GA is planned for the end of 2026 or the start of 2027. The [5.0 release notes](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/release_notes/ocp-5-0-release-notes) say OpenShift Container Platform 5.0 (`RHEA-2026:4893`) is available and uses Kubernetes 1.36.
-- [ ] Re-read [ai/mcp-server/README.md](ai/mcp-server/README.md). It calls the MCP server a Technology Preview image. The 5.0 release notes say the MCP server is generally available, including the MCP Lifecycle Operator and the `MCPServer` resource. The Lightspeed `OLSConfig` MCP tool stays a separate claim.
-- [ ] Add the RHCOS 10.2 constraint to [whats-new/upgrades-from-4.md](whats-new/upgrades-from-4.md). The 5.0 release notes say a cluster still using runc cannot move nodes to RHCOS 10.2. crun is required. A mix of RHCOS 9 and RHCOS 10.2 is not supported.
-- [ ] Record the AWS options that are generally available in 5.0 in [aws/README.md](aws/README.md): user-managed DNS, dual-stack, and outbound access to `ec2.us-east-1.amazonaws.com:443` when the interactive installer generates `install-config.yaml`.
+- [x] Closing paragraph of [whats-new/README.md](whats-new/README.md). The [5.0 release notes](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/release_notes/ocp-5-0-release-notes) say OpenShift Container Platform 5.0 (`RHEA-2026:4893`) is available and uses Kubernetes 1.36.
+- [x] [ai/mcp-server/README.md](ai/mcp-server/README.md). The 5.0 release notes say the MCP server is generally available, including the MCP Lifecycle Operator and the `MCPServer` resource. The MCP chapter still marks that operator Technology Preview. The Lightspeed `OLSConfig` MCP tool stays a separate claim.
+- [x] RHCOS 10.2 constraint in [whats-new/upgrades-from-4.md](whats-new/upgrades-from-4.md). A cluster still using runc cannot move nodes to RHCOS 10.2. crun is required. A mix of RHCOS 9 and RHCOS 10.2 is not supported.
+- [x] [aws/README.md](aws/README.md) records the 5.0 options: user-managed DNS, dual-stack, and outbound access to `ec2.us-east-1.amazonaws.com:443` when the interactive installer generates `install-config.yaml`.
 - [ ] Hosted control planes. The 5.0 release notes say hosted control planes for 5.0 are available. This index has no note. Do not start a procedure until the 5.0 hosted control planes book is fetched.
 - [ ] [virsh-vm-deployment.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/kvm-scripts/virsh-vm-deployment.sh) still uses `--os-variant rhel7` and a 4.y image path. Do not run it until both match 5.0. See [kvm-scripts/README.md](kvm-scripts/README.md).
 
 ## Upgrades to re-check
 
-- [ ] Workstation `oc` was 4.22.18 on 20 October 2026. The 5.0 client install is in [pre-steps/README.md](pre-steps/README.md).
+- [x] Workstation `oc` was 4.22.18 on 20 October 2026. This host's client is 5.0.1, from [pre-steps/README.md](pre-steps/README.md).
 - [ ] Do not run the OpenShift 4 client and installer scripts for 5.0. [configure-openshift-installer.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/configure-installers/configure-openshift-installer.sh) is still `VERSION="4.2."`. [configure-openshift-packages.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/pre-steps/configure-openshift-packages.sh) still defaults to `stable-4.15`. See [configure-installers/README.md](configure-installers/README.md).
 - [ ] OpenShift Virtualization install chapter. A search on 10 November 2026 returned OpenShift Dedicated 4, ROSA 4, and OpenShift Container Platform 4.12 install chapters. No 5.0 install chapter. [openshift-virt/README.md](openshift-virt/README.md) stays a pointer to the 5.0 virtualization release notes. Do not write an install from those older books.
 - [ ] ACM stays on the 2.17 book in [acm/README.md](acm/README.md). The OpenShift 4 notes are 2.4 era. Do not apply them. A search for 2.18 on 10 November 2026 did not return an ACM book. It returned the 5.0 edge GitOps ZTP chapters.
@@ -30,12 +30,12 @@ Open items for these notes. Check a box when the note exists or the upgrade has 
 
 Look again after a feature-gate change. Do not add install folders until they are enabled.
 
-This list is the `featuregate` read on 20 October 2026. The 5.0 GA release notes fetched on 10 November 2026 do not promote these four. Re-read `oc get featuregate cluster` on a 5.0.0 or 5.0.1 cluster before any of them gets an install folder.
+Read on 10 November 2026 from the 5.0.1 cluster `ocp5` (`oc get featuregate cluster`, empty `spec`). The same four are still disabled. The 5.0 GA release notes fetched on 10 November 2026 do not promote them. The lists are in [feature gates](whats-new/feature-gates.md).
 
-- [ ] Bootc node management
-- [ ] Cluster API install
-- [ ] Machine API migration
-- [ ] Karpenter operator
+- [ ] Bootc node management (`BootcNodeManagement` disabled)
+- [ ] Cluster API install (`ClusterAPIInstall` disabled)
+- [ ] Machine API migration (`MachineAPIMigration` disabled)
+- [ ] Karpenter operator (`KarpenterOperator` disabled)
 
 ## Repos not folded in yet
 

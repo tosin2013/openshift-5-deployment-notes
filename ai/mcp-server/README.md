@@ -1,16 +1,16 @@
 # MCP server for OpenShift
 
-The MCP server lets an assistant (Cursor, Claude Code, VS Code, or Lightspeed) call OpenShift APIs through a fixed set of tools. It is a Technology Preview image, not a ClusterOperator. Putting it behind authentication and per-tool policy is a separate install, recorded in [gateway.md](gateway.md).
+The MCP server lets an assistant (Cursor, Claude Code, VS Code, or Lightspeed) call OpenShift APIs through a fixed set of tools. The [5.0 release notes](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/release_notes/ocp-5-0-release-notes) say the MCP server is generally available. OpenShift 4.22 introduced it as Technology Preview. In 5.0, lifecycle management is the MCP Lifecycle Operator and one `MCPServer` resource. The [MCP server chapter](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/ai_applications/mcp-server) still marks that operator Technology Preview and points the install at the OpenShift AI docs, so this note does not install it. The Lightspeed `OLSConfig` MCP tool stays a separate claim in the [Lightspeed notes](../lightspeed/README.md). Putting a server behind authentication and per-tool policy is recorded in [gateway.md](gateway.md).
 
 On 9 November 2026 `cluster-84wvf` (`5.0.0-rc.7`) was already running it. Namespace `openshift-mcp`, deployment `openshift-mcp-server`, image `registry.redhat.io/openshift-mcp-tech-preview/openshift-mcp-server-rhel9:0.3`. The route is `https://mcp-server.apps.cluster-84wvf.dyn.redhatworkshops.io/mcp`. Lightspeed calls the in-cluster address `http://openshift-mcp-server.openshift-mcp.svc.cluster.local:8080/mcp`. ConfigMap `mcp-config` sets toolsets `core`, `config`, `metrics`, `netedge`, `openshift`, and `ossm`, with `read_only` off and `cluster_auth_mode` `passthrough`. OpenShift GitOps Application `openshift-mcp-server` manages it and self-heals. The [lab index](https://showroom-showroom-84wvf-1.apps.cluster-84wvf.dyn.redhatworkshops.io/?t=Terminal&p=index) also names an ACS MCP server. That showroom page is not one of the three modules, and these notes do not cover it. A search for Advanced Cluster Security 5.0 returned the [5.0 release notes](https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_security_for_kubernetes/5.0/html/release_notes/release-notes-50) and did not return an ACS MCP chapter.
 
-Chart `openshift-helm-charts/redhat-openshift-mcp-server` version 0.3.0 was listed at https://charts.openshift.io/ on 20 October 2026. The same image tag is what this cluster runs. The Helm procedure below is how to install that chart on a cluster that does not already have it.
+Chart `openshift-helm-charts/redhat-openshift-mcp-server` version 0.3.0 was listed at https://charts.openshift.io/ on 20 October 2026. The same image tag is what `cluster-84wvf` ran. The 5.0 MCP chapter does not document that chart. The commands below are the chart 0.3.0 record.
 
 Product docs: [MCP server](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/ai_applications/mcp-server) (OpenShift Container Platform 5.0 AI applications). Upstream config: [openshift/openshift-mcp-server](https://github.com/openshift/openshift-mcp-server/blob/main/docs/configuration.md).
 
-## Install read-only
+## Chart 0.3.0, recorded 20 October 2026
 
-Use this on a cluster that does not already have the server. It binds the chart's ServiceAccount to the built-in `view` role and sets `read_only` in the server config. It does not grant cluster-admin. The server on `cluster-84wvf` is the GitOps install above, and that one has `read_only` off.
+Recorded chart 0.3.0 install for a cluster that does not already have the server. It binds the chart's ServiceAccount to the built-in `view` role and sets `read_only` in the server config. It does not grant cluster-admin. The server on `cluster-84wvf` is the GitOps install above, and that one has `read_only` off. The 5.0 chapter's install is the MCP Lifecycle Operator, which that chapter marks Technology Preview.
 
 ```bash
 helm repo add openshift-helm-charts https://charts.openshift.io/
