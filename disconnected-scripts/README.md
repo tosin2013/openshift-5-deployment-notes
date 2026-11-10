@@ -27,7 +27,7 @@ Do not commit the init password. The registry CA is `$HOME/quay-install/rootCA.p
 ./mirror-registry uninstall -v --quayRoot "$HOME/quay-install"
 ```
 
-`--autoApprove` skips the uninstall prompt and deletes that directory. The host needs Podman for the login. `sudo dnf install -y container-tools` provides it. The older note also installed `ansible-core`, set `user.max_user_namespaces=28633`, and expected libvirt for `mirror-ocp-full.sh`.
+`--autoApprove` skips the uninstall prompt and deletes that directory. The host needs Podman for the login. `sudo dnf install -y container-tools` provides it. The older note also installed `ansible-core`, set `user.max_user_namespaces=28633`, and expected libvirt for the GitHub copy of `mirror-ocp-full.sh`.
 
 ## oc-mirror v2
 
@@ -69,7 +69,13 @@ mirror:
    - name: registry.redhat.io/ubi9/ubi@sha256:20f695d2a91352d4eaa25107535126727b5945bff38ed36a3e59590f495046f0
 ```
 
-When the mirror host can reach both the internet and the registry, mirror straight to the registry. `--workspace` is required for that path.
+When the mirror host can reach both the internet and the registry, mirror straight to the registry. `--workspace` is required for that path. [mirror-ocp-full.sh](mirror-ocp-full.sh) writes the platform image set, pinned at `5.0.1` unless you set `MIN_VERSION` and `MAX_VERSION`, and runs that command. Set `PACKAGES` to a comma-separated list to add the v5.0 catalog. The chapter sample above also has `additionalImages`. The script does not. Operator catalogs are in [Operator catalogs on a restricted network](operator-lifecycle-manager-on-restricted-networks.md).
+
+```bash
+REGISTRY=registry.example.com REGISTRY_PASSWORD='<init_password>' ./mirror-ocp-full.sh
+```
+
+The same command by hand:
 
 ```bash
 oc mirror -c imageset-config.yaml --workspace file://$HOME/oc-mirror --v2 docker://registry.example.com:8443
@@ -83,6 +89,10 @@ oc mirror -c imageset-config.yaml --from file://$HOME/oc-mirror docker://registr
 ```
 
 The generated manifests are in `$HOME/oc-mirror/working-dir/cluster-resources`. That directory holds `ImageDigestMirrorSet`, `ImageTagMirrorSet`, `CatalogSource`, `ClusterCatalog`, and, when `graph` is true, `UpdateService`.
+
+## OpenShift Mirror Console
+
+oc-mirror v2 2.0.0, issued 27 October 2026, names the OpenShift Mirror Console for building the image set. [mirror-gui](https://github.com/openshift/mirror-gui) is that interface. On 10 November 2026 its README listed OpenShift 4.16 through 4.22. The install stays on the watch list in [todo.md](../todo.md) until that list includes 5.0.
 
 ## Install from the mirror
 
@@ -117,7 +127,7 @@ oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disab
 The scripts below are the 4.y path. They still contain a 4.y package list. Do not run them for a 5.0 release.
 
 - [mirror-ocp-release.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/mirror-ocp-release.sh) mirrors one release with `oc adm release mirror`.
-- [mirror-ocp-full.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/mirror-ocp-full.sh) mirrors the release and extra images.
+- The [GitHub mirror-ocp-full.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/mirror-ocp-full.sh) is the older note. It runs `oc adm release mirror`, extracts `openshift-baremetal-install`, downloads the metal images, and starts `httpd`. Use [mirror-ocp-full.sh](mirror-ocp-full.sh) in this directory for 5.0.
 - [disconnected-oc-mirror.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/disconnected-oc-mirror.sh) and [disconnected-olm.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/disconnected-olm.sh) are the v1 oc-mirror and catalog variants.
 - [get-ai-svc-version.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/disconnected-scripts/get-ai-svc-version.sh) asks the Assisted Installer which release it can install. It reads an offline token from `$HOME/rh-api-offline-token`. Do not commit the token.
 

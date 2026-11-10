@@ -35,8 +35,10 @@
 - [DNS](dns-server-configuration/README.md): procedure; `api`, `api-int`, `*.apps`, and A/PTR records for bootstrap and each node
 - [HAProxy](haproxy-configuration/README.md): procedure; API, machine config server, and ingress
 - [PXE](pxe-configuration/README.md): procedure; TFTP boot for a user-provisioned machine
+- [Web server](webserver-configuration/README.md): procedure; HTTP server for Ignition and the RHCOS live images on a user-provisioned install
 - [Helper node](helper-node/README.md): procedure; the host that runs DNS, DHCP, PXE, HAProxy, and HTTP
-- [Disconnected mirroring](disconnected-scripts/README.md): procedure; mirror registry, oc-mirror v2, then `imageContentSources` in `install-config.yaml`
+- [Disconnected mirroring](disconnected-scripts/README.md): procedure; mirror registry, local `mirror-ocp-full.sh` for oc-mirror v2, then `imageContentSources` in `install-config.yaml`
+- [Operator catalogs](disconnected-scripts/operator-lifecycle-manager-on-restricted-networks.md): procedure; v5.0 file-based catalog for a disconnected cluster
 
 ## After the cluster is up
 

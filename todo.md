@@ -4,7 +4,7 @@ Open items for these notes. Check a box when the note exists or the upgrade has 
 
 ## Missing notes
 
-- [ ] Web server configuration. Linked from the OpenShift 4 index and missing in both repositories.
+- [x] Web server configuration. The 5.0 HTTP server is in [webserver-configuration/README.md](webserver-configuration/README.md). The OpenShift 4 index still links `webserver-configuration/`, and that folder is missing there.
 - [ ] `run-ocp-installer`. Linked from the OpenShift 4 index and missing in both repositories.
 - [ ] Re-run the VMware guides on OpenShift 5 and replace the index in [vmware/README.md](vmware/README.md) with the commands you used. Scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/tree/master/vmware).
 - [ ] Re-run the Assisted Installer scripts against a 5.0 release. Scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/tree/master/assisted-installer).
@@ -35,6 +35,7 @@ Look again after a feature-gate change. Do not add install folders until they ar
 ## Repos not folded in yet
 
 - [ ] https://github.com/openshift/oc-mirror/
+- [ ] https://github.com/openshift/mirror-gui/ lists OpenShift 4.16 through 4.22 on 10 November 2026. Fold the install into [Disconnected install](disconnected-scripts/README.md) when that list includes 5.0.
 - [ ] https://github.com/tosin2013/ztp-pipeline-relocatable
 - [ ] https://github.com/tosin2013/ztp-the-hard-way
 

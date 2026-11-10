@@ -15,16 +15,9 @@ Then follow, in this order:
 2. [DNS](../dns-server-configuration/README.md)
 3. [PXE](../pxe-configuration/README.md)
 4. [HAProxy](../haproxy-configuration/README.md)
+5. [Web server](../webserver-configuration/README.md)
 
-The HTTP server steps are not in this repo yet. After `openshift-install` writes Ignition, publish `bootstrap.ign`, `master.ign`, and `worker.ign` from the helper's web root and restore SELinux labels:
-
-```bash
-sudo mkdir -p /var/www/html/openshift/ignitions
-sudo cp "$HOME/ocp/"*.ign /var/www/html/openshift/ignitions/
-sudo restorecon -RFv /var/www/html/
-```
-
-If the files were created on another machine, copy them to that directory and run `restorecon` there.
+Install the web server with the other services. Copy `bootstrap.ign`, `master.ign`, and `worker.ign` after `openshift-install` writes them. If those files were created on another machine, copy them onto the helper and follow the same publish steps.
 
 An Ansible role that builds the same helper is [christianh814/ocp4-upi-helpernode](https://github.com/christianh814/ocp4-upi-helpernode). Read its OpenShift version before you run it.
 

@@ -79,14 +79,7 @@ openshift-install create ignition-configs --dir "$HOME/ocp"
 
 The directory then contains `bootstrap.ign`, `master.ign`, `worker.ign`, and `auth/kubeconfig`. Do not commit `auth/`.
 
-5. Publish the Ignition files and the RHCOS live images from the helper. The HTTP server steps are not written up in this repo yet. [Helper node](../helper-node/README.md) copies the `.ign` files to `/var/www/html/openshift/ignitions/`. Record the SHA512 digest of each Ignition file:
-
-```bash
-sha512sum "$HOME/ocp/bootstrap.ign" "$HOME/ocp/master.ign" "$HOME/ocp/worker.ign"
-curl -k http://<HTTP_server>/bootstrap.ign
-```
-
-List the live images for this installer:
+5. Publish the Ignition files from the helper, and the live kernel, initramfs, and rootfs when the machines boot from the network. The steps and the SHA512 digest are in [Web server](../webserver-configuration/README.md). List the live images for this installer:
 
 ```bash
 openshift-install coreos print-stream-json | grep '\.iso[^.]'

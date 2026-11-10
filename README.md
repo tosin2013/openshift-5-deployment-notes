@@ -24,8 +24,10 @@ These notes are a private working set until the end of November 2026. Agents wor
 * [DNS](dns-server-configuration/)
 * [HAProxy](haproxy-configuration/)
 * [PXE](pxe-configuration/)
+* [Web server](webserver-configuration/)
 * [Helper node](helper-node/)
 * [Disconnected mirroring](disconnected-scripts/)
+* [Operator catalogs](disconnected-scripts/operator-lifecycle-manager-on-restricted-networks.md)
 
 ## After the cluster is up
 
