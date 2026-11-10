@@ -1,6 +1,6 @@
 # DNS
 
-The nodes, the API, and `*.apps` resolve through a DNS server you run for a user-provisioned install. OpenShift 5 needs the same names the 4.6-and-later zone used: `api`, `api-int`, and `*.apps`. The per-node and etcd SRV records from older 4.y notes are not the zone to copy.
+The nodes, the API, and `*.apps` resolve through a DNS server you run for a user-provisioned install. OpenShift 5 needs `api`, `api-int`, and `*.apps`, plus an A record and a PTR record for the bootstrap machine, each control plane, and each compute machine. A PTR record is not required for `*.apps`. etcd SRV records are not part of this zone.
 
 ```bash
 sudo dnf install -y bind bind-utils

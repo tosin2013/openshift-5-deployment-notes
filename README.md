@@ -7,11 +7,11 @@ These notes are a private working set until the end of November 2026. Agents wor
 ## Install
 
 * [OpenShift on AWS](aws/)
-* [OpenShift on bare metal](bare-metal/)
+* [OpenShift on bare metal](bare-metal/) — [Agent-based Installer](agent-based/) or the [Assisted Installer](assisted-installer/); user-provisioned PXE and HAProxy when you supply them
 * [OpenShift on KVM](kvm-scripts/)
 * [OpenShift on VMware](vmware/)
 * [Assisted Installer](assisted-installer/)
-* [Agent-based Installer](agent-based/)
+* [Agent-based Installer](agent-based/) — bare-metal cluster from one ISO
 * [Red Hat OpenShift Service on AWS](rosa/)
 * [Azure Red Hat OpenShift](aro/)
 

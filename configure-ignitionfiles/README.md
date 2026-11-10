@@ -3,14 +3,16 @@
 Ignition is how RHCOS comes up configured. Generate it on the install host after the 5.0 `openshift-install` binary is on the path.
 
 ```bash
-ssh-keygen -t rsa -b 4096 -f ~/.ssh/cluster-key -N ''
+ssh-keygen -t ed25519 -N '' -f ~/.ssh/cluster-key
 chmod 400 ~/.ssh/cluster-key
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/cluster-key
 mkdir -p "$HOME/ocp"
 ```
 
-Get the pull secret from [console.redhat.com](https://console.redhat.com/openshift/install). Write `install-config.yaml` in `$HOME/ocp`. For a user-provisioned cluster, `platform` is `none: {}` and the network type is `OVNKubernetes`. The OpenShift 4 sample used `OpenShiftSDN` and `OC_VERSION=4.2.0`. Do not copy those.
+For FIPS, create an `rsa` or `ecdsa` key instead.
+
+Get the pull secret from [console.redhat.com](https://console.redhat.com/openshift/install). Write `install-config.yaml` in `$HOME/ocp`. For a user-provisioned cluster, `platform` is `none: {}` and the network type is `OVNKubernetes`. `compute.replicas` stays `0`. You still boot the worker machines yourself. The OpenShift 4 sample used `OpenShiftSDN` and `OC_VERSION=4.2.0`. Do not copy those. The full bare-metal sample, including `machineNetwork`, is in [OpenShift on bare metal](../bare-metal/README.md).
 
 ```yaml
 apiVersion: v1
@@ -19,7 +21,7 @@ metadata:
   name: ocp
 compute:
   - name: worker
-    replicas: 2
+    replicas: 0
 controlPlane:
   name: master
   replicas: 3
@@ -40,10 +42,16 @@ sshKey: 'contents of ~/.ssh/cluster-key.pub'
 
 ```bash
 cp "$HOME/ocp/install-config.yaml" "$HOME/ocp/install-config.yaml.bak"
+openshift-install create manifests --dir="$HOME/ocp"
+```
+
+For a cluster that has worker machines, confirm `mastersSchedulable` is `false` in `$HOME/ocp/manifests/cluster-scheduler-02-config.yml`. For a three-node cluster, leave it `true`. Then:
+
+```bash
 openshift-install create ignition-configs --dir="$HOME/ocp"
 ```
 
-Confirm the command with `openshift-install create --help` on the 5.0 binary. Copy `bootstrap.ign`, `master.ign`, and `worker.ign` to the helper's web root. See [Helper node](../helper-node/README.md).
+Copy `bootstrap.ign`, `master.ign`, and `worker.ign` to the helper's web root. See [Helper node](../helper-node/README.md).
 
 A vSphere `install-config` adds a `platform.vsphere` block (vCenter, datacenter, datastore, username). Put the password in the file on the install host and do not commit it. Proxy and extra CA fields, when you need them, go in the same file. The field list is in the product docs below.
 

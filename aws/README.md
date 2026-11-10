@@ -36,4 +36,4 @@ The package script in the OpenShift 4 notes still defaults to `stable-4.15`. The
 
 Product docs: [Installation methods](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installing_on_aws/installing-methods-aws) (OpenShift Container Platform 5.0 Installing on AWS). Download, the SSH key, the pull secret, and `create cluster` are in [Installer-provisioned infrastructure](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installing_on_aws/installer-provisioned-infrastructure).
 
-Check these steps on the build you are installing. `stable-5.0` was missing from the mirror on 9 November 2026.
+Check these steps on the build you are installing. `stable-5.0` returned 404 earlier on 9 November 2026. A later listing that day served the `5.0.1` client names.

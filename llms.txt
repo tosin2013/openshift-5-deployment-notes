@@ -1,6 +1,6 @@
 # OpenShift 5 field notes
 
-> Field notes for installing and running OpenShift 5. Read the linked note before answering. A product page, the OpenShift mirror, a lab record, and the OpenShift 4 scripts stay separate.
+> Field notes for installing and running OpenShift 5. Read the linked note before answering. A product page, the OpenShift mirror, a lab record, and the OpenShift 4 scripts stay separate. A procedure is a guide you can follow to build that cluster. The commands and the config files are in the note. [OpenShift on AWS](aws/README.md) is the model. When a note still runs a command the 5.0 page marks deprecated, or a tool that page does not document, take it out of the procedure.
 
 [AGENTS.md](AGENTS.md) says how to answer a user and how to add a note. [README.md](README.md) is the human index. [todo.md](todo.md) lists missing notes, upgrades to re-check, and features disabled on 5.0.0-rc.7.
 
@@ -16,11 +16,11 @@
 - [OpenShift on AWS](aws/README.md): procedure; bastion, AWS CLI, client, and `create cluster` in this repo
 - [AWS CLI script](aws/configure-aws-cli.sh): procedure; installs AWS CLI v2 and writes the default profile
 - [AWS installer script](aws/configure-openshift-installer.sh): procedure; runs `openshift-install` against `$HOME/cluster`
-- [OpenShift on bare metal](bare-metal/README.md): procedure; user-provisioned machines, then DNS, HAProxy, PXE, and Ignition
+- [OpenShift on bare metal](bare-metal/README.md): procedure; Agent-based Installer or Assisted Installer for most clusters; user-provisioned PXE and HAProxy when you supply them
 - [OpenShift on KVM](kvm-scripts/README.md): pointer to the bare-metal path; guest scripts stay in the OpenShift 4 notes
 - [OpenShift on VMware](vmware/README.md): pointer; the step-by-step guides stay in the OpenShift 4 notes
 - [Assisted Installer](assisted-installer/README.md): procedure outline; the scripts stay in the OpenShift 4 notes and target 4.y
-- [Agent-based Installer](agent-based/README.md): stub; the `openshift-install agent` steps are not written yet
+- [Agent-based Installer](agent-based/README.md): procedure; bare-metal `install-config.yaml` and `agent-config.yaml`, then `agent create image`
 - [ROSA](rosa/README.md): procedure; managed service on AWS, separate from the self-managed installer
 - [ARO](aro/README.md): pointer; the full command list stays in the OpenShift 4 notes
 
@@ -32,11 +32,11 @@
 - [Installer binary](configure-installers/README.md): procedure; download `openshift-install` for the release you are installing
 - [Ignition](configure-ignitionfiles/README.md): procedure; generate Ignition after the 5.0 installer is on the path
 - [DHCP](dhcp-configuration/README.md): procedure; addresses and the PXE handoff on the helper
-- [DNS](dns-server-configuration/README.md): procedure; `api`, `api-int`, and `*.apps`
+- [DNS](dns-server-configuration/README.md): procedure; `api`, `api-int`, `*.apps`, and A/PTR records for bootstrap and each node
 - [HAProxy](haproxy-configuration/README.md): procedure; API, machine config server, and ingress
 - [PXE](pxe-configuration/README.md): procedure; TFTP boot for a user-provisioned machine
 - [Helper node](helper-node/README.md): procedure; the host that runs DNS, DHCP, PXE, HAProxy, and HTTP
-- [Disconnected mirroring](disconnected-scripts/README.md): procedure; mirror the release and point `install-config.yaml` at it
+- [Disconnected mirroring](disconnected-scripts/README.md): procedure; mirror registry, oc-mirror v2, then `imageContentSources` in `install-config.yaml`
 
 ## After the cluster is up
 

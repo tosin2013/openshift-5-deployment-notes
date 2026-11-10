@@ -10,13 +10,13 @@ Open items for these notes. Check a box when the note exists or the upgrade has 
 - [ ] Re-run the Assisted Installer scripts against a 5.0 release. Scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/tree/master/assisted-installer).
 - [ ] Re-run the ROSA create path and confirm the current `rosa` flags. The CLI install is in [pre-steps](pre-steps/README.md). The create scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/tree/master/rosa).
 - [ ] Re-run the ARO create path. The full command list stays in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/aro/README.md).
-- [ ] Write the Agent-based Installer commands in [agent-based/README.md](agent-based/README.md). The page currently points at the 5.0 book only.
+- [x] Write the Agent-based Installer commands in [agent-based/README.md](agent-based/README.md). The commands and both config files are in the note.
 
 ## Upgrades to re-check
 
 - [ ] Workstation `oc` was 4.22.18 on 20 October 2026. Install the 5.0 client when that is the tarball you want. See [pre-steps/README.md](pre-steps/README.md).
 - [ ] Installer scripts in the OpenShift 4 notes are pinned at `4.2.`. See [configure-installers/README.md](configure-installers/README.md).
-- [ ] `stable-5.0` on the OpenShift mirror returned 404 on 9 November 2026. `candidate-5.0` served the `5.0.0-rc.7` client and installer names. Numbered directories `5.0.0` and `5.0.1` contained the tarballs. See [aws/README.md](aws/README.md).
+- [ ] `stable-5.0` on the OpenShift mirror returned 404 earlier on 9 November 2026. A later listing the same day served the `5.0.1` client and installer names. `candidate-5.0` served the `5.0.0-rc.7` names. Numbered directories `5.0.0` and `5.0.1` contained the tarballs. The `stable-5.0` update graph listed `5.0.0` and `5.0.1`. See [aws/README.md](aws/README.md) and [Disconnected install](disconnected-scripts/README.md).
 - [ ] [configure-openshift-packages.sh](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/pre-steps/configure-openshift-packages.sh) defaults to `stable-4.15`.
 - [ ] ARO install book. The last search returned no ARO install book. The newest ARO page was OpenShift Data Foundation 4.22.
 - [ ] OpenShift Virtualization install chapter. The last search returned 4.16 as the newest install page. The 5.0 hit was the release notes.

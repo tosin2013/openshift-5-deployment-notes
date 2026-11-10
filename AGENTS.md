@@ -14,7 +14,7 @@ Do not commit kubeconfigs, pull secrets, offline tokens, cloud keys, or admin pa
 
 Read `llms.txt`, open the matching note, and answer from that note.
 
-- A stub, such as [agent-based/README.md](agent-based/README.md), means the commands are not written yet. Say that, and point at the product-docs line. Do not fill the gap from memory.
+- A stub, such as [openshift-virt/README.md](openshift-virt/README.md), means the commands are not written yet. Say that, and point at the product-docs line. Do not fill the gap from memory.
 - A lab line in [cluster/this-lab.md](cluster/this-lab.md), [releases/](releases/README.md), or a page that says the observations stay the lab record is that cluster on that date.
 - A command block offered as what to run now can be followed. A command block offered as what was run on a date stays a record.
 - When the note says the scripts stay in the OpenShift 4 notes, send the user there and say those scripts were written for 4.y.
@@ -29,8 +29,10 @@ One folder, one `README.md`:
 
 - One short paragraph on when to use the path.
 - Numbered steps. Commands in `bash` fences.
+- A procedure is a guide someone can follow to build that cluster. Put the commands and the config files in the note. Use placeholders for the pull secret, the SSH key, and any other secret. [aws/README.md](aws/README.md) is the model. Do not stop at a field name and leave the rest of the file on the product page.
 - Link a sibling note instead of repeating DNS, HAProxy, PXE, or the client download.
 - Close with a product-docs line. On an install path, add `Check these steps on the build you are installing.`
+- When you edit a note, look for deprecations on the 5.0 page for that note. If the note tells you to run a command or a tool the page marks deprecated, or a tool the page does not document, take it out of the procedure. Say it is the older note's tool. `filetranspiler` on the bare-metal page was that case.
 
 Add the same bullet to `README.md` and `llms.txt`, in the same section. A `llms.txt` bullet is `- [Name](path): one clause`, and the clause says procedure, stub, lab record, or pointer to the OpenShift 4 notes.
 

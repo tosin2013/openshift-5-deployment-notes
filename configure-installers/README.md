@@ -2,7 +2,7 @@
 
 `openshift-install` has to match the OpenShift release you are installing. Download the tarball from the numbered directory under [openshift-v5/clients/ocp](https://mirror.openshift.com/pub/openshift-v5/clients/ocp/) and put `openshift-install` on the path.
 
-On 9 November 2026 `5.0.0/` and `5.0.1/` each listed `openshift-install-linux-<version>.tar.gz` and `openshift-install-linux.tar.gz`. `candidate-5.0/` served the `5.0.0-rc.7` filenames. `stable-5.0/` returned 404. The 5.0 AWS chapter still links [openshift-v4/clients/ocp](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/). These notes use `openshift-v5`.
+On 9 November 2026 `5.0.0/` and `5.0.1/` each listed `openshift-install-linux-<version>.tar.gz` and `openshift-install-linux.tar.gz`. `candidate-5.0/` served the `5.0.0-rc.7` filenames. `stable-5.0/` returned 404 earlier that day and later served the `5.0.1` filenames. The 5.0 AWS chapter still links [openshift-v4/clients/ocp](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/). These notes use `openshift-v5`.
 
 ```bash
 VERSION=5.0.1

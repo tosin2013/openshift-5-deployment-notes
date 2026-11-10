@@ -54,7 +54,8 @@ Match the notes already in this repo:
 - One short paragraph on when to use the path.
 - Numbered steps. Commands in `bash` fences. Link a sibling note instead of repeating DNS, HAProxy, PXE, or the client download.
 - These are the product page's steps. Do not write them as something this lab ran.
-- Stop at the commands required to finish the path. Leave the rest on the product page.
+- A procedure is a guide someone can follow to build that cluster. Put the commands and the config files in the note. Use placeholders for the pull secret, the SSH key, and any other secret. `aws/README.md` is the model. Do not stop at a field name and leave the rest of the file on the product page. The product page still wins for a claim, a version, or a flag. It does not replace a config file the installer will read.
+- When you edit a note, look for deprecations on the 5.0 page for that note. If the note tells you to run a command or a tool the page marks deprecated, or a tool the page does not document, take it out of the procedure. Say it is the older note's tool.
 
 Close with:
 
@@ -86,7 +87,7 @@ The root `README.md` is the human index. `llms.txt` is the agent map. When the p
 
 ## Examples
 
-**Stub.** `agent-based/README.md` says the field steps are not written yet. Fetch the 5.0 Agent-based Installer chapter and write the `openshift-install agent` steps. Keep the product-docs line.
+**Stub.** `openshift-virt/README.md` says the install chapter found was 4.16. Do not turn that into a 5.0 procedure. `agent-based/README.md` is now a procedure. Do not replace it with the book.
 
 **Lab record.** `whats-new/rhcos-10.md` says the observations stay the lab record. A different version in the architecture chapter goes next to the table. The measured rows stay.
 
