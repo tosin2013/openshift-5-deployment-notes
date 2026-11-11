@@ -59,6 +59,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 
 ## Guides
 
+* [Interactive experiences](https://www.redhat.com/en/interactive-experiences)
 * [OpenShift Examples](https://examples.openshift.pub/)
 * [OpenShift Quickstarts](https://github.com/kenmoini/openshift-quickstarts/tree/main)
 * [OpenShift Networking](https://network-insight.net/2022/06/09/openshift-networking/)
