@@ -2,9 +2,9 @@
 
 Lightspeed is the in-cluster assistant. It is a separate operator (`OLSConfig`), not a ClusterOperator in the 5.0 payload. Current product pages are [Installing OpenShift Lightspeed 2.0](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/2.0/html/install/ols-installing-lightspeed), [Configuring OpenShift Lightspeed 2.0](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/2.0/html/configure/ols-configuring-openshift-lightspeed), and [Google Vertex AI](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/2.0/html/configure/ols-configuring-integrating-google-vertex-ai). The 2.0 install guide says autonomous agents require OpenShift Container Platform 5.0. The 1.0 install guide, checked in October 2026, listed OpenShift 4.16 through 4.22 and described the chat control as the Lightspeed icon in the lower-right corner of the console. That icon is separate from the "OpenShift Lightspeed version" line on the overview.
 
-On 28 October 2026 a working install was recorded on `cluster-84wvf` (also `5.0.0-rc.7`). That cluster's `redhat-operators` index (`registry.redhat.io/redhat/redhat-operator-index:v5.0`) contains `lightspeed-operator` **2.0.0** on channels `stable` and `alpha`. On 11 November 2026 the `ocp5` `redhat-operators` catalog listed the same package on `stable` and `alpha` at `lightspeed-operator.v2.0.1`. `ocp5` does not have the operator installed. An install needs an LLM provider secret. `cluster-84wvf` is using the operator: `lightspeed-operator-controller-manager` is running and it reconciles `OLSConfig`. OpenShift GitOps installed that Deployment from a Helm chart. There is no Subscription and no CSV, so it is not the 2.0.0 catalog install. The console plugin is the PatternFly 6 build, so the lower-right icon can render. Details and the setup steps are in [working-cluster.md](working-cluster.md).
+On 28 October 2026 a working install was recorded on `cluster-84wvf` (also `5.0.0-rc.7`). That cluster's `redhat-operators` index (`registry.redhat.io/redhat/redhat-operator-index:v5.0`) contains `lightspeed-operator` **2.0.0** on channels `stable` and `alpha`. On 11 November 2026 the `ocp5` `redhat-operators` catalog listed the same package on `stable` and `alpha` at `lightspeed-operator.v2.0.1`. That day the operator was installed from channel `stable`: CSV `lightspeed-operator.v2.0.1` reached `Succeeded`, and both `lightspeed-operator-controller-manager` and `lightspeed-agentic-operator-controller-manager` were ready. `oc get olsconfig cluster` reports `overallStatus` `Ready`. `AlertsAdapterReady` stays `False` because `spec.ols.deployment.alertsAdapter.configMapRef` is not set. That is the default. The script does not set it. `cluster-84wvf` is using the operator: `lightspeed-operator-controller-manager` is running and it reconciles `OLSConfig`. OpenShift GitOps installed that Deployment from a Helm chart. There is no Subscription and no CSV, so it is not the 2.0.0 catalog install. The console plugin is the PatternFly 6 build, so the lower-right icon can render. Details and the setup steps are in [working-cluster.md](working-cluster.md).
 
-The rest of this page is the 21 October sandbox, when the v5.0 indexes did not list the package and the only copy was Lightspeed 1.1.1 inside a 4.22 catalog snapshot. That 1.1.1 operator picks its console plugin from the OpenShift minor number. On 5.0 the minor is `0`, so it deploys the PatternFly 5 plugin and the chat icon has no size. Do not use 1.1.1 on OpenShift 5 when 2.0.0 is in the index.
+The [Install the operator](#install-the-operator) section is the 21 October sandbox, when the v5.0 indexes did not list the package and the only copy was Lightspeed 1.1.1 inside a 4.22 catalog snapshot. That 1.1.1 operator picks its console plugin from the OpenShift minor number. On 5.0 the minor is `0`, so it deploys the PatternFly 5 plugin and the chat icon has no size. Do not use 1.1.1 on OpenShift 5 when 2.0.0 is in the index.
 
 Check again after each payload update:
 
@@ -14,11 +14,52 @@ oc get olsconfig 2>/dev/null || true
 oc get pods -n openshift-lightspeed 2>/dev/null || true
 ```
 
+## OpenAI-compatible endpoint
+
+[configure-maas.sh](configure-maas.sh) asks for the endpoint URL, the model id, and the API token, then calls [configure-provider.sh](configure-provider.sh) for provider `rhoai-vllm`. That script writes the Secret with `oc` and applies a temporary kustomize overlay on `instance/overlays/rhoai-vllm`. The overlay is not committed. A pipe supplies one value per line, in that order. `RHOAI_URL`, `RHOAI_MODEL`, and `MAAS_API_TOKEN` skip the questions. The script refuses to run under `bash -x`. None of those values are stored in this repo. The operator has to be running first. If the provider health check fails on the certificate, [tls-ca.md](providers/tls-ca.md) applies. `rhoai_vllm` accepts `additionalCAConfigMapRef`.
+
+```bash
+./ai/lightspeed/configure-maas.sh
+```
+
+These hosted tours show a configured 2.0 install. They are not a switch on the cluster.
+
+- [Red Hat OpenShift Lightspeed 2.0 walkthrough](https://www.redhat.com/en/interactive-demo/red-hat-openshift-lightspeed-20-walkthrough)
+- [AI-assisted troubleshooting and observability with OpenShift Lightspeed](https://www.redhat.com/en/interactive-demo/ai-assisted-troubleshooting-and-observability-openshift-lightspeed)
+
+The second tour uses the Cluster Observability Operator and Perses. This pass does not install them.
+
+## Catalog install
+
+The 2.0 CLI install is a Namespace, an OperatorGroup, and a Subscription in `openshift-lightspeed`. Channel `stable`, source `redhat-operators`, approval automatic, and no `startingCSV`. The same objects are prepared as kustomize in the fork [tosin2013/gitops-catalog](https://github.com/tosin2013/gitops-catalog), branch `add-openshift-lightspeed`, directory `openshift-lightspeed-operator`. The pull request to redhat-cop/gitops-catalog is drafted in [gitops-catalog-upstream.md](gitops-catalog-upstream.md) and is not opened.
+
+`operator/base` leaves the channel as `patch-me-see-overlays-dir`. Apply `operator/overlays/stable` or `operator/overlays/alpha`. The `alpha` overlay is the other channel on this cluster's `redhat-operators` catalog. Do not apply `operator/base` or `instance/base` on their own.
+
+Until that pull request is merged, install from a local checkout of the fork:
+
+```bash
+oc apply -k /path/to/gitops-catalog/openshift-lightspeed-operator/operator/overlays/stable
+```
+
+After it is merged, the same overlay is:
+
+```bash
+oc apply -k https://github.com/redhat-cop/gitops-catalog/openshift-lightspeed-operator/operator/overlays/stable
+```
+
+This cluster was configured with [configure-maas.sh](configure-maas.sh), which calls [configure-provider.sh](configure-provider.sh). The script creates the Secret outside git and patches only the non-secret fields. Set `GITOPS_CATALOG` to the checkout, or clone the fork next to this repo. Do not apply a placeholder instance overlay on this cluster. It would replace the Ready `OLSConfig`.
+
+The catalog README has one Argo CD Application for `operator/overlays/stable` and one for a single instance overlay. The Application does not contain the token. The Secret named by that overlay is created outside the catalog, for example by the Sealed Secrets or External Secrets components already in the catalog. This contribution does not install either of those, and it does not install the GitOps operator on `ocp5`.
+
+Product docs: [Installing OpenShift Lightspeed](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/2.0/html/install/ols-installing-lightspeed) (Red Hat OpenShift Lightspeed 2.0).
+
+Check these steps on the build you are installing.
+
 The October 2026 check used the 1.0 guides: [Installing](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html-single/install/index), [Configuring](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed), and [Google Vertex AI](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-integrating-google-vertex-ai). Use the 2.0 pages linked above for a current cluster.
 
 ## Install the operator
 
-For a 5.0 cluster whose `redhat-operators` catalog lists 2.0.0, use [working-cluster.md](working-cluster.md). The procedure in this section is the 21 October sandbox, when that package was missing and 1.1.1 had to come from a 4.22 snapshot.
+For a 5.0 cluster whose `redhat-operators` catalog lists 2.0, use [Catalog install](#catalog-install). [working-cluster.md](working-cluster.md) is the 28 October record of a Helm install on `cluster-84wvf`. The procedure in this section is the 21 October sandbox, when that package was missing and 1.1.1 had to come from a 4.22 snapshot.
 
 Do this before [configure-provider.sh](configure-provider.sh). The script creates the provider Secret and the `OLSConfig`. It exits unless namespace `openshift-lightspeed` exists and deployment `lightspeed-operator-controller-manager` has a ready pod.
 

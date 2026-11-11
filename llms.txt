@@ -70,9 +70,11 @@
 - [Upgrades from 4](whats-new/upgrades-from-4.md): product path from 4.22, including the RHCOS 10.2 constraint; this lab was a fresh install
 - [Feature gates](whats-new/feature-gates.md): lab record of the default gate set on 5.0.0-rc.7 and the 10 November 2026 5.0.1 read
 - [OpenShift Lightspeed](ai/lightspeed/README.md): procedure and lab record for the Lightspeed operator
+- [Lightspeed catalog draft](ai/lightspeed/gitops-catalog-upstream.md): draft issue and pull request for the Lightspeed kustomize contribution, not opened
 - [Working cluster](ai/lightspeed/working-cluster.md): lab record of Lightspeed on cluster-84wvf
 - [Agentic troubleshooting](ai/lightspeed/agentic-troubleshooting.md): lab record of alert-driven Lightspeed runs on 28 October 2026
-- [Configure provider](ai/lightspeed/configure-provider.sh): procedure; writes the provider Secret from the environment and applies OLSConfig
+- [Configure provider](ai/lightspeed/configure-provider.sh): procedure; writes the provider Secret with oc and applies a temporary kustomize overlay
+- [Configure MaaS endpoint](ai/lightspeed/configure-maas.sh): procedure; asks for the OpenAI-compatible URL, model, and token, then calls the provider script
 - [Trusted CA](ai/lightspeed/providers/tls-ca.md): procedure for a private CA on the LLM endpoint
 - [OpenAI provider](ai/lightspeed/providers/openai.yaml): procedure; OLSConfig for OpenAI, token stays out of git
 - [Azure OpenAI provider](ai/lightspeed/providers/azure-openai.yaml): procedure; OLSConfig for an API key or Entra ID

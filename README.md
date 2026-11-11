@@ -49,6 +49,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 
 * [What changed from OpenShift 4](whats-new/)
 * [OpenShift Lightspeed](ai/lightspeed/)
+* [Lightspeed catalog draft](ai/lightspeed/gitops-catalog-upstream.md)
 * [Agentic troubleshooting](ai/lightspeed/agentic-troubleshooting.md)
 * [MCP server](ai/mcp-server/)
 * [MCP gateway](ai/mcp-server/gateway.md)

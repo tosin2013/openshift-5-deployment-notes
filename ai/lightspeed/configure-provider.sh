@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Create the Lightspeed provider Secret from the environment, fill non-secret
-# placeholders, and apply that provider's OLSConfig. Tokens stay out of git.
+# Create the Lightspeed provider Secret with oc, then apply a temporary
+# kustomize overlay for the non-secret fields. The token stays out of git.
 set -euo pipefail
 
 if [[ $- == *x* ]]; then
@@ -10,11 +10,10 @@ fi
 
 NS=openshift-lightspeed
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-PROVIDERS="${ROOT}/providers"
-TMP_RENDER=
+TMP_DIR=
 cleanup() {
-  if [[ -n "${TMP_RENDER}" ]]; then
-    rm -f "$TMP_RENDER"
+  if [[ -n "${TMP_DIR}" ]]; then
+    rm -rf "$TMP_DIR"
   fi
 }
 trap cleanup EXIT
@@ -23,9 +22,14 @@ usage() {
   cat <<'EOF'
 Usage: configure-provider.sh <provider>
 
-Creates or updates the Secret in openshift-lightspeed, then applies the
-matching OLSConfig. The Lightspeed operator must already be running there.
+Creates or updates the Secret in openshift-lightspeed, then applies a
+temporary kustomize overlay on the catalog instance for that provider.
+The overlay is not committed. The token stays in the Secret.
+The Lightspeed operator must already be running there.
 A second provider replaces the OLSConfig named cluster.
+
+Set GITOPS_CATALOG to the openshift-lightspeed-operator directory, or to a
+gitops-catalog checkout. The default is a checkout next to this repo.
 
   vertex-anthropic   GCP_SERVICE_ACCOUNT_JSON GCP_PROJECT
   gemini-vertex      GCP_SERVICE_ACCOUNT_JSON GCP_PROJECT
@@ -91,26 +95,75 @@ apply_literal_secret() {
     --dry-run=client -o yaml | oc apply -f -
 }
 
-render_apply() {
-  local src=$1
+catalog_dir() {
+  local candidate
+  if [[ -n "${GITOPS_CATALOG:-}" ]]; then
+    if [[ -d "${GITOPS_CATALOG}/instance/overlays" ]]; then
+      printf '%s\n' "${GITOPS_CATALOG}"
+      return
+    fi
+    candidate="${GITOPS_CATALOG}/openshift-lightspeed-operator"
+    if [[ -d "${candidate}/instance/overlays" ]]; then
+      printf '%s\n' "${candidate}"
+      return
+    fi
+    die "GITOPS_CATALOG does not contain the Lightspeed instance overlays: ${GITOPS_CATALOG}"
+  fi
+  candidate="$(cd "${ROOT}/../../.." && pwd)/gitops-catalog/openshift-lightspeed-operator"
+  if [[ -d "${candidate}/instance/overlays" ]]; then
+    printf '%s\n' "${candidate}"
+    return
+  fi
+  die "Clone https://github.com/tosin2013/gitops-catalog next to this repo, or set GITOPS_CATALOG."
+}
+
+apply_kustomize() {
+  local overlay=$1
   shift
-  TMP_RENDER=$(mktemp)
-  python3 - "$src" "$TMP_RENDER" "$@" <<'PY'
-import pathlib, sys
-src, dest, *pairs = sys.argv[1:]
-text = pathlib.Path(src).read_text()
+  local catalog
+  catalog="$(catalog_dir)"
+  [[ -f "${catalog}/instance/overlays/${overlay}/kustomization.yaml" ]] || die "No kustomize overlay for ${overlay}."
+  TMP_DIR=$(mktemp -d)
+  # oc kustomize refuses an absolute resource path. Copy the instance tree
+  # into the temp dir so the overlay and its base stay inside one root.
+  cp -a "${catalog}/instance" "${TMP_DIR}/instance"
+  python3 - "$TMP_DIR" "$overlay" "$@" <<'PY'
+import json, pathlib, sys
+tmp, overlay, *pairs = sys.argv[1:]
+patches = []
 for pair in pairs:
-    old, new = pair.split("=", 1)
-    if old not in text:
-        sys.exit(f"placeholder {old} not found in {src}")
-    text = text.replace(old, new)
-if "REPLACE_WITH_" in text:
-    sys.exit("rendered OLSConfig still contains REPLACE_WITH_")
-pathlib.Path(dest).write_text(text)
+    path, value = pair.split("=", 1)
+    patches.append({"op": "replace", "path": path, "value": value})
+kustomization = {
+    "apiVersion": "kustomize.config.k8s.io/v1beta1",
+    "kind": "Kustomization",
+    "resources": [f"instance/overlays/{overlay}"],
+}
+if patches:
+    pathlib.Path(tmp, "patch.json").write_text(json.dumps(patches))
+    kustomization["patches"] = [{
+        "target": {
+            "group": "ols.openshift.io",
+            "version": "v1alpha1",
+            "kind": "OLSConfig",
+            "name": "cluster",
+        },
+        "path": "patch.json",
+    }]
+pathlib.Path(tmp, "kustomization.yaml").write_text(json.dumps(kustomization) + "\n")
 PY
-  oc apply -f "$TMP_RENDER"
-  rm -f "$TMP_RENDER"
-  TMP_RENDER=
+  oc apply -k "$TMP_DIR"
+  rm -rf "$TMP_DIR"
+  TMP_DIR=
+}
+
+apply_azure() {
+  apply_kustomize azure-openai \
+    "/spec/llm/providers/0/apiVersion=${AZURE_OPENAI_API_VERSION}" \
+    "/spec/llm/providers/0/deploymentName=${AZURE_OPENAI_DEPLOYMENT}" \
+    "/spec/llm/providers/0/url=${AZURE_OPENAI_URL}" \
+    "/spec/llm/providers/0/models/0/name=${AZURE_OPENAI_MODEL}" \
+    "/spec/ols/defaultModel=${AZURE_OPENAI_MODEL}"
 }
 
 if [[ $# -eq 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
@@ -133,8 +186,13 @@ case "$provider" in
     [[ -f "$GCP_SERVICE_ACCOUNT_JSON" ]] || die "GCP_SERVICE_ACCOUNT_JSON is not a file: ${GCP_SERVICE_ACCOUNT_JSON}"
     apply_literal_secret llmcreds \
       --from-file="gcp-service-account.json=${GCP_SERVICE_ACCOUNT_JSON}"
-    src="${PROVIDERS}/${provider}.yaml"
-    render_apply "$src" "REPLACE_WITH_GCP_PROJECT=${GCP_PROJECT}"
+    if [[ "$provider" == vertex-anthropic ]]; then
+      apply_kustomize vertex-anthropic \
+        "/spec/llm/providers/0/googleVertexAnthropicConfig/projectID=${GCP_PROJECT}"
+    else
+      apply_kustomize gemini-vertex \
+        "/spec/llm/providers/0/googleVertexConfig/projectID=${GCP_PROJECT}"
+    fi
     ;;
   gemini-api)
     require GEMINI_API_KEY
@@ -143,10 +201,10 @@ case "$provider" in
     pairs=()
     if [[ -n "${GEMINI_MODEL:-}" ]]; then
       require GEMINI_MODEL
-      pairs+=("name: gemini-4-argon=name: ${GEMINI_MODEL}")
-      pairs+=("defaultModel: gemini-4-argon=defaultModel: ${GEMINI_MODEL}")
+      pairs+=("/spec/llm/providers/0/models/0/name=${GEMINI_MODEL}")
+      pairs+=("/spec/ols/defaultModel=${GEMINI_MODEL}")
     fi
-    render_apply "${PROVIDERS}/gemini-api.yaml" "${pairs[@]}"
+    apply_kustomize gemini-api "${pairs[@]}"
     ;;
   rhoai-vllm)
     require RHOAI_API_TOKEN
@@ -154,13 +212,13 @@ case "$provider" in
     require_v1_url RHOAI_URL
     apply_literal_secret rhoai-api-keys \
       --from-literal="apitoken=${RHOAI_API_TOKEN}"
-    pairs=("https://REPLACE_WITH_HOST/v1=${RHOAI_URL}")
+    pairs=("/spec/llm/providers/0/url=${RHOAI_URL}")
     if [[ -n "${RHOAI_MODEL:-}" ]]; then
       require RHOAI_MODEL
-      pairs+=("name: granite-4-0-h-tiny=name: ${RHOAI_MODEL}")
-      pairs+=("defaultModel: granite-4-0-h-tiny=defaultModel: ${RHOAI_MODEL}")
+      pairs+=("/spec/llm/providers/0/models/0/name=${RHOAI_MODEL}")
+      pairs+=("/spec/ols/defaultModel=${RHOAI_MODEL}")
     fi
-    render_apply "${PROVIDERS}/rhoai-vllm.yaml" "${pairs[@]}"
+    apply_kustomize rhoai-vllm "${pairs[@]}"
     ;;
   rhelai-vllm)
     require RHELAI_API_TOKEN
@@ -169,17 +227,19 @@ case "$provider" in
     require_v1_url RHELAI_URL
     apply_literal_secret rhelai-api-keys \
       --from-literal="apitoken=${RHELAI_API_TOKEN}"
-    render_apply "${PROVIDERS}/rhelai-vllm.yaml" \
-      "https://REPLACE_WITH_HOST/v1=${RHELAI_URL}" \
-      "REPLACE_WITH_MODEL=${RHELAI_MODEL}"
+    apply_kustomize rhelai-vllm \
+      "/spec/llm/providers/0/url=${RHELAI_URL}" \
+      "/spec/llm/providers/0/models/0/name=models/${RHELAI_MODEL}" \
+      "/spec/ols/defaultModel=models/${RHELAI_MODEL}"
     ;;
   openai)
     require OPENAI_API_TOKEN
     require OPENAI_MODEL
     apply_literal_secret openai \
       --from-literal="apitoken=${OPENAI_API_TOKEN}"
-    render_apply "${PROVIDERS}/openai.yaml" \
-      "REPLACE_WITH_MODEL=${OPENAI_MODEL}"
+    apply_kustomize openai \
+      "/spec/llm/providers/0/models/0/name=${OPENAI_MODEL}" \
+      "/spec/ols/defaultModel=${OPENAI_MODEL}"
     ;;
   azure-openai)
     require AZURE_OPENAI_API_KEY
@@ -189,11 +249,7 @@ case "$provider" in
     require AZURE_OPENAI_MODEL
     apply_literal_secret azure-api-keys \
       --from-literal="apitoken=${AZURE_OPENAI_API_KEY}"
-    render_apply "${PROVIDERS}/azure-openai.yaml" \
-      "REPLACE_WITH_AZURE_API_VERSION=${AZURE_OPENAI_API_VERSION}" \
-      "REPLACE_WITH_AZURE_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT}" \
-      "https://REPLACE_WITH_RESOURCE.openai.azure.com/=${AZURE_OPENAI_URL}" \
-      "REPLACE_WITH_MODEL=${AZURE_OPENAI_MODEL}"
+    apply_azure
     ;;
   azure-entra)
     require AZURE_CLIENT_ID
@@ -207,11 +263,7 @@ case "$provider" in
       --from-literal="client_id=${AZURE_CLIENT_ID}" \
       --from-literal="client_secret=${AZURE_CLIENT_SECRET}" \
       --from-literal="tenant_id=${AZURE_TENANT_ID}"
-    render_apply "${PROVIDERS}/azure-openai.yaml" \
-      "REPLACE_WITH_AZURE_API_VERSION=${AZURE_OPENAI_API_VERSION}" \
-      "REPLACE_WITH_AZURE_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT}" \
-      "https://REPLACE_WITH_RESOURCE.openai.azure.com/=${AZURE_OPENAI_URL}" \
-      "REPLACE_WITH_MODEL=${AZURE_OPENAI_MODEL}"
+    apply_azure
     ;;
   watsonx)
     require WATSONX_API_KEY
@@ -220,10 +272,11 @@ case "$provider" in
     require WATSONX_MODEL
     apply_literal_secret watsonx-api-keys \
       --from-literal="apitoken=${WATSONX_API_KEY}"
-    render_apply "${PROVIDERS}/watsonx.yaml" \
-      "https://REPLACE_WITH_WATSONX_HOST=${WATSONX_URL}" \
-      "REPLACE_WITH_PROJECT_ID=${WATSONX_PROJECT_ID}" \
-      "ibm/REPLACE_WITH_MODEL=${WATSONX_MODEL}"
+    apply_kustomize watsonx \
+      "/spec/llm/providers/0/url=${WATSONX_URL}" \
+      "/spec/llm/providers/0/projectID=${WATSONX_PROJECT_ID}" \
+      "/spec/llm/providers/0/models/0/name=${WATSONX_MODEL}" \
+      "/spec/ols/defaultModel=${WATSONX_MODEL}"
     ;;
   *)
     die "Unknown provider: ${provider}. Run with --help for the list."
