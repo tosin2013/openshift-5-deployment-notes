@@ -40,7 +40,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 * [NFS](post-steps/#nfs)
 * [Quay 3.18](post-steps/#quay)
 * [GitOps](post-steps/#gitops)
-* [Red Hat Advanced Cluster Management](acm/)
+* [Red Hat Advanced Cluster Management 5.0](acm/)
 * [OpenShift Virtualization](openshift-virt/)
 * [Ansible Tower (legacy)](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/configure-ansible-tower.md)
 * [Red Hat Single Sign-On 7.3 (older template)](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/red-hat-sso-templates.md)
@@ -55,7 +55,7 @@ These notes are a private working set until the end of November 2026. Agents wor
 * [Sample app](ai/sample-app/)
 * [Release log](releases/) for a cluster you built
 * [5.0.0](releases/5.0.0.md) — installer tarball is published under `openshift-v5/clients/ocp/5.0.0/`; this file is not a lab read
-* [5.0.1](releases/5.0.1.md) — AWS lab read from 10 November 2026; the 5.0 release-notes chapter has no 5.0.1 section
+* [5.0.1](releases/5.0.1.md) — AWS lab read from 10 November 2026, plus the 11 November operator-catalog read; the 5.0 release-notes chapter has no 5.0.1 section
 
 ## Guides
 

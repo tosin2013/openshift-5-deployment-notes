@@ -12,6 +12,8 @@ Product docs: [Understanding identity provider configuration](https://docs.redha
 
 Point the internal registry at a NooBaa bucket after OpenShift Data Foundation is installed. Confirm the ODF channel supports your OpenShift 5 release before you install the operator.
 
+On 11 November 2026 the `ocp5` `redhat-operators` catalog listed `odf-operator` with default channel `stable-4.22` and CSV `odf-operator.v4.22.7-rhodf`. That catalog had no 5.0 channel. Do not install from that listing.
+
 ```yaml
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
@@ -107,6 +109,8 @@ Prefer a CSI driver for the platform. The older NFS provisioner role is [tosin20
 
 Install `quay-operator` from the `stable-3.18` channel and create a `QuayRegistry`. Do not follow [the OpenShift 4.2 Quay note](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/deploy-red-hat-quay-3-on-openshift-4.2.md).
 
+On 11 November 2026 the `ocp5` `redhat-operators` catalog still had `stable-3.18` as the default and newest `quay-operator` channel, CSV `quay-operator.v3.18.2`. The label stays.
+
 Product docs: [Deploying the Red Hat Quay Operator](https://docs.redhat.com/en/documentation/red_hat_quay/3.18/html/deploying_the_red_hat_quay_operator_on_openshift_container_platform/) (Quay 3.18).
 
 ## GitOps
@@ -123,4 +127,4 @@ Left as a legacy note: [configure-ansible-tower.md](https://github.com/tosin2013
 
 See [OpenShift Virtualization](../openshift-virt/README.md).
 
-Product docs: [OpenShift Container Platform 5.0 Virtualization release notes](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/virtualization/release-notes).
+Product docs: [Installing](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/virtualization/installing) (OpenShift Container Platform 5.0 Virtualization).

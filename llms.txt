@@ -44,17 +44,17 @@
 
 - [Day-two operations](post-steps/README.md): procedures for the registry, certificates, chrony, cluster resource override, NFS, Quay 3.18, and GitOps
 - [Identity providers](post-steps/identity-providers.md): procedure; HTPasswd and OpenID on the `OAuth` object
-- [Registry](post-steps/README.md#internal-registry-on-openshift-data-foundation): procedure; internal registry on an OpenShift Data Foundation bucket
+- [Registry](post-steps/README.md#internal-registry-on-openshift-data-foundation): procedure; internal registry on an OpenShift Data Foundation bucket; the 11 November 2026 catalog channel was `stable-4.22`
 - [Certificates](post-steps/README.md#certificates): procedure; Route 53 cert-manager issuer for the apps wildcard and the external API name
 - [AWS certificate script](post-steps/create_custom_cert.sh): procedure; explicit Route 53 credentials, then the ingress and API certificates
 - [cert-manager](cert-manager/README.md): procedure; kustomize install of the cert-manager operator on the `stable-v1` channel
 - [Chrony](post-steps/README.md#chrony): procedure; a MachineConfig for chrony, with the Butane version to re-check
 - [Cluster resource override](post-steps/README.md#cluster-resource-override): procedure; one `ClusterResourceOverride` named `cluster`
 - [NFS](post-steps/README.md#nfs): pointer; prefer a CSI driver, and the older provisioner role stays outside this repo
-- [Quay 3.18](post-steps/README.md#quay): procedure; `quay-operator` on the `stable-3.18` channel
+- [Quay 3.18](post-steps/README.md#quay): procedure; `quay-operator` on the `stable-3.18` channel, still the newest channel on 11 November 2026
 - [GitOps](post-steps/README.md#gitops): procedure; OpenShift GitOps on the `latest` channel
-- [Red Hat Advanced Cluster Management](acm/README.md): pointer; use the 2.17 book, and the OpenShift 4 notes are ACM 2.4
-- [OpenShift Virtualization](openshift-virt/README.md): stub; the newest install chapter found was 4.16
+- [Red Hat Advanced Cluster Management](acm/README.md): procedure; 5.0 hub install on channel `release-5.0` in `open-cluster-management`; not installed on ocp5
+- [OpenShift Virtualization](openshift-virt/README.md): procedure; 5.0 OLM install into `openshift-cnv`; AWS needs bare-metal workers, and ocp5 is `m6i.xlarge`
 - [Ansible Tower (legacy)](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/configure-ansible-tower.md): pointer to a legacy note in the OpenShift 4 repo
 - [Red Hat Single Sign-On 7.3](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/post-steps/red-hat-sso-templates.md): pointer to an older template in the OpenShift 4 repo
 
@@ -93,7 +93,7 @@
 - [Release log](releases/README.md): empty table to copy when the lab cluster moves
 - [5.0.0-rc.7](releases/5.0.0-rc.7.md): lab record from 20 October 2026
 - [5.0.0](releases/5.0.0.md): placeholder; the installer tarball is on the mirror, and this file is not a lab read
-- [5.0.1](releases/5.0.1.md): lab record of the 10 November 2026 AWS install; the 5.0 release notes have no 5.0.1 section
+- [5.0.1](releases/5.0.1.md): lab record of the 10 November 2026 AWS install and the 11 November operator-catalog read; the 5.0 release notes have no 5.0.1 section
 
 ## Optional
 
