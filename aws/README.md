@@ -18,7 +18,7 @@ Use a bastion in the same AWS account. From this directory, run the scripts in t
 ../pre-steps/configure-openshift-packages.sh -i
 ```
 
-The package script in the OpenShift 4 notes still defaults to `stable-4.15`. The directory named `latest` is not the 5.0 client.
+The OpenShift 4 copy of that package script is in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes). Use the script in this repo.
 
 4. Create the cluster with [configure-openshift-installer.sh](configure-openshift-installer.sh). It creates an `ed25519` key at `~/.ssh/cluster-key`. For FIPS, create an `rsa` or `ecdsa` key instead. Do not commit the pull secret.
 
@@ -26,7 +26,7 @@ The package script in the OpenShift 4 notes still defaults to `stable-4.15`. The
 ./configure-openshift-installer.sh
 ```
 
-`create cluster` reads `$HOME/cluster/install-config.yaml`. When that file is already there, the script copies it to `$HOME/cluster-install-config.yaml` and runs `create cluster`. The copy is the backup, because the installer consumes the original. The mode of the backup does not change the install. When the file is missing, the script runs `create install-config` and stops. Edit the file, including the pull secret from [console.redhat.com](https://console.redhat.com/openshift/install/pull-secret), then run the script again. The OpenShift 4 helper curled a tmux config, ran `chmod 400 ~/.ssh/cluster-key .pub`, and sent you to `cloud.openshift.com`. Use this copy. The OpenShift 4 [configure-installers script](https://github.com/tosin2013/openshift-4-deployment-notes/blob/master/configure-installers/configure-openshift-installer.sh) is still `VERSION="4.2."`.
+`create cluster` reads `$HOME/cluster/install-config.yaml`. When that file is already there, the script copies it to `$HOME/cluster-install-config.yaml` and runs `create cluster`. The copy is the backup, because the installer consumes the original. The mode of the backup does not change the install. When the file is missing, the script runs `create install-config` and stops. Edit the file, including the pull secret from [console.redhat.com](https://console.redhat.com/openshift/install/pull-secret), then run the script again. The OpenShift 4 copy of this helper is in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes). It curled a tmux config, ran `chmod 400 ~/.ssh/cluster-key .pub`, and sent you to `cloud.openshift.com`. Use this copy.
 
 `oc` on OpenShift 5 includes kustomize. Install Helm only when you need it outside the cluster:
 

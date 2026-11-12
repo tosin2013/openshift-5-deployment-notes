@@ -4,7 +4,7 @@ Field notes for installing and running OpenShift 5. [README.md](README.md) is th
 
 ## Sources
 
-Keep these four apart. A product page supplies claims, versions, links, and procedures. The [OpenShift mirror](https://mirror.openshift.com/pub/) supplies published client, installer, and image names. A lab record supplies what this cluster did. The [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes) supply scripts.
+Keep these four apart. A product page supplies claims, versions, links, and procedures. The [OpenShift mirror](https://mirror.openshift.com/pub/) supplies published client, installer, and image names. A lab record supplies what this cluster did. The [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes) are the OpenShift 4 install notes. An OpenShift 4 question goes there. Do not run those scripts for 5.0.
 
 Read `todo.md` before adding a procedure. Leave an item under "Disabled on 5.0.0-rc.7" without an install folder.
 
@@ -17,9 +17,9 @@ Read `llms.txt`, open the matching note, and answer from that note.
 - A stub, such as [openshift-virt/README.md](openshift-virt/README.md), means the commands are not written yet. Say that, and point at the product-docs line. Do not fill the gap from memory.
 - A lab line in [cluster/this-lab.md](cluster/this-lab.md), [releases/](releases/README.md), or a page that says the observations stay the lab record is that cluster on that date.
 - A command block offered as what to run now can be followed. A command block offered as what was run on a date stays a record.
-- When the note says the scripts stay in the OpenShift 4 notes, send the user there and say those scripts were written for 4.y.
+- When the note says the scripts stay in the OpenShift 4 notes, send the user to [that repo](https://github.com/tosin2013/openshift-4-deployment-notes). Those scripts were written for 4.y and are not run for 5.0.
 - When `todo.md` lists the feature under "Disabled on 5.0.0-rc.7", do not offer an install.
-- Tell the user to re-check the steps on the build they are installing. For these notes, clients and the installer start at `openshift-v5/`. A `stable-4.*` path and `openshift-v4/clients/ocp/latest` are the wrong client.
+- Tell the user to re-check the steps on the build they are installing. Clients and the installer in these notes come from a numbered directory under `openshift-v5/`. A `stable-4.*` path is not this client.
 - Link a sibling note instead of repeating DNS, HAProxy, PXE, or the client download.
 - Do not ask the user to paste a kubeconfig, pull secret, token, cloud key, or password into this repo.
 

@@ -2,7 +2,7 @@
 
 Install `oc`, `kubectl`, and `openshift-install` on RHEL 9 or newer from the OpenShift release you are installing. RHEL 8 is not supported. The script in this directory is [configure-openshift-packages.sh](configure-openshift-packages.sh).
 
-The OpenShift 4 copy of that script still defaults to `stable-4.15` on RHEL 8 and `latest` on RHEL 9. On 9 November 2026 `latest` under [openshift-v5/clients/ocp](https://mirror.openshift.com/pub/openshift-v5/clients/ocp/latest/) served `openshift-client-linux-4.22.22.tar.gz`. Use the script here instead.
+OpenShift 4 client scripts stay in the [OpenShift 4 notes](https://github.com/tosin2013/openshift-4-deployment-notes). Use the script in this directory for 5.0. On 9 November 2026 `latest` under [openshift-v5/clients/ocp](https://mirror.openshift.com/pub/openshift-v5/clients/ocp/latest/) served `openshift-client-linux-4.22.22.tar.gz`. On 12 November 2026 that directory and [openshift-v4/clients/ocp/latest/](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/) both listed `openshift-client-linux-5.0.1.tar.gz`. This script does not use `latest`.
 
 ```bash
 chmod +x configure-openshift-packages.sh

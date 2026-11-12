@@ -1,6 +1,6 @@
 # OpenShift 5 field notes
 
-Field notes for installing and running OpenShift 5 on your cluster. The product manual starts at the [OpenShift Container Platform 5.0 installation overview](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installation_overview/). Re-check a command on the build you are installing.
+Field notes for installing and running OpenShift 5 on your cluster. OpenShift 4 install notes are at [tosin2013/openshift-4-deployment-notes](https://github.com/tosin2013/openshift-4-deployment-notes). The product manual starts at the [OpenShift Container Platform 5.0 installation overview](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/installation_overview/). Re-check a command on the build you are installing.
 
 These notes are a private working set until the end of November 2026. Agents working in this repo: [AGENTS.md](AGENTS.md) and [llms.txt](llms.txt).
 
