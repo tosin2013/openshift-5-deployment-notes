@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - clusterissuer.yaml
+  - certificates.yaml
+# generated-patch.yaml is created by setup-secrets.sh and gitignored
+patches:
+  - path: generated-patch.yaml
