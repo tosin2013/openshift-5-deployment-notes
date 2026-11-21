@@ -7,6 +7,24 @@ Requires the cert-manager operator to be installed first:
 oc apply -k cert-manager/operator/overlays/stable-v1
 ```
 
+## ⚠️ Step 0 (MANDATORY): Add Let's Encrypt CA to cluster trust bundle
+
+Run this **before** any other step. Skipping it causes all nodes to go NotReady
+when the kube-apiserver rolls out the new cert.
+
+```bash
+chmod +x cert-manager/instances/add-trusted-ca.sh
+./cert-manager/instances/add-trusted-ca.sh
+```
+
+This distributes the Let's Encrypt CA chain to every RHCOS node via the MCO.
+Without it, kubelets cannot verify the new API server cert → nodes go NotReady.
+
+**Reference**: [OCP 5.0 — Proxy certificates (trustedCA)](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/certificate-types-and-descriptions)
+> *"The trustedCA bundle is merged with the RHCOS trust bundle and injected into the truststore of platform components."*
+
+---
+
 ## Steps
 
 **1. Create secret and generate kustomize patch:**

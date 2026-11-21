@@ -33,6 +33,43 @@ The CSV phase is `Succeeded`. The operator pod runs in `cert-manager-operator`. 
 
 The AWS example is [create_custom_cert.sh](../post-steps/create_custom_cert.sh). It uses the explicit Route 53 credentials from the 5.0 chapter: `accessKeyID`, `hostedZoneID`, `region`, and secret key `awsSecretAccessKey`.
 
-Product docs: [cert-manager Operator for Red Hat OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift) (OpenShift Container Platform 5.0 Security and compliance).
+## ⚠️ CRITICAL: Add Let's Encrypt CA to cluster trust bundle FIRST
+
+**Before rotating any cluster certificate** (API server or ingress), you must add the Let's Encrypt CA chain to the OpenShift cluster's trusted CA bundle. Skipping this step causes:
+
+- `Kubelet stopped posting node status` on all nodes
+- kube-apiserver CrashLoopBackOff during cert rotation rollout
+- All nodes going NotReady and cascading operator failures
+
+**Why**: When the kube-apiserver operator rolls out the new cert (revisions restart on all control plane nodes), the kubelets and operators must already trust the new cert's CA. The MCO distributes the trust bundle to every RHCOS node — this must complete before the rollout starts.
+
+Reference: [Certificate types — Proxy certificates (trustedCA)](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/certificate-types-and-descriptions) — OCP 5.0 Security and Compliance
+
+```bash
+# Run this BEFORE setup-secrets.sh or create_custom_cert.sh
+chmod +x cert-manager/instances/add-trusted-ca.sh
+./cert-manager/instances/add-trusted-ca.sh
+# Script downloads the Let's Encrypt intermediate + root from AIA URLs,
+# creates letsencrypt-ca ConfigMap, patches proxy/cluster trustedCA,
+# then waits for MCO to finish rolling out to all nodes (~5-15 min).
+```
+
+Then apply credentials and certificates:
+
+```bash
+# Cloud-specific setup (creates credentials secret + DNS01 ClusterIssuer)
+./cert-manager/setup-secrets.sh --provider <ibm-cloud-kvm|aws|gcp|azure> <args>
+
+# Apply ClusterIssuer + Certificate resources
+oc apply -k cert-manager/instances/<provider>/
+```
+
+See [instances/](instances/) for per-cloud provider directories with kustomize-compatible manifests.
+
+## Product docs
+
+- [cert-manager Operator for Red Hat OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift) (OCP 5.0 Security and compliance)
+- [Certificate types and descriptions — Proxy certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/certificate-types-and-descriptions) (trustedCA / MCO distribution)
+- [Adding API server certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/certificate-types-and-descriptions#add-api-server-certs)
 
 Check these steps on the build you are installing.
