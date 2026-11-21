@@ -42,6 +42,18 @@ if [[ "$access_key" == *$'\n'* || "$secret_key" == *$'\n'* || "$email" == *$'\n'
   echo "Access key, secret key, and email must be one line each." >&2
   exit 1
 fi
+# Let's Encrypt rejects placeholder/example domains for ACME account registration.
+# Catch them early before wasting time on DNS01 challenge setup.
+if [[ "$email" == *@example.com || "$email" == *@example.org || "$email" == *@example.net \
+   || "$email" == you@* || "$email" == user@* || "$email" == admin@example* ]]; then
+  echo "Error: '${email}' looks like a placeholder. Provide a real email address." >&2
+  echo "Let's Encrypt rejects example.com and similar forbidden domains." >&2
+  exit 1
+fi
+if [[ "$email" != *@*.* ]]; then
+  echo "Error: '${email}' does not look like a valid email address." >&2
+  exit 1
+fi
 
 if ! command -v oc >/dev/null 2>&1; then
   echo "oc is not on PATH." >&2

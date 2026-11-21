@@ -23,6 +23,18 @@ REGION="${5:-us-east-1}"
 if ! command -v oc &>/dev/null; then echo "oc not found on PATH"; exit 1; fi
 if ! oc whoami &>/dev/null; then echo "Not logged in — set KUBECONFIG"; exit 1; fi
 
+# Validate email — Let's Encrypt rejects example.com and similar placeholder domains
+if [[ "$EMAIL" == *@example.com || "$EMAIL" == *@example.org || "$EMAIL" == *@example.net \
+   || "$EMAIL" == you@* || "$EMAIL" == user@* || "$EMAIL" == admin@example* ]]; then
+  echo "Error: '${EMAIL}' looks like a placeholder. Provide a real email address." >&2
+  echo "Let's Encrypt rejects example.com and similar forbidden domains." >&2
+  exit 1
+fi
+if [[ "$EMAIL" != *@*.* ]]; then
+  echo "Error: '${EMAIL}' does not look like a valid email address." >&2
+  exit 1
+fi
+
 APPS_DOMAIN="*.$(oc get ingresscontroller default -n openshift-ingress-operator \
   -o jsonpath='{.status.domain}')"
 API_HOST="$(oc whoami --show-server | sed -E 's#https://([^:/]+).*#\1#')"

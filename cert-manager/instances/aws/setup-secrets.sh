@@ -21,6 +21,15 @@ REGION="${5:-}"
 if ! command -v oc &>/dev/null; then echo "oc not found on PATH"; exit 1; fi
 if ! oc whoami &>/dev/null; then echo "Not logged in — set KUBECONFIG"; exit 1; fi
 
+# Validate email — Let's Encrypt rejects placeholder domains
+if [[ "$EMAIL" == *@example.com || "$EMAIL" == *@example.org || "$EMAIL" == *@example.net \
+   || "$EMAIL" == you@* || "$EMAIL" == user@* || "$EMAIL" == admin@example* ]]; then
+  echo "Error: placeholder email detected. Provide a real email address." >&2; exit 1
+fi
+if [[ "$EMAIL" != *@*.* ]]; then
+  echo "Error: '${EMAIL}' is not a valid email address." >&2; exit 1
+fi
+
 # Auto-detect region from AWS infrastructure
 if [[ -z "${REGION}" ]]; then
   REGION="$(oc get infrastructure cluster \
