@@ -55,7 +55,8 @@ AIA_URL="$(openssl s_client -connect "${API_HOST}:6443" \
   | openssl x509 -noout -text 2>/dev/null \
   | grep "CA Issuers - URI" \
   | awk -F'URI:' '{print $2}' \
-  | tr -d ' ')"
+  | tr -d ' ' \
+  || true)"
 
 if [[ -z "$AIA_URL" ]]; then
   # API cert is still the cluster's self-signed cert (cert-manager not yet run).
