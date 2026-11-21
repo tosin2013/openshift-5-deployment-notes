@@ -58,23 +58,22 @@ AIA_URL="$(openssl s_client -connect "${API_HOST}:6443" \
   | tr -d ' ')"
 
 if [[ -z "$AIA_URL" ]]; then
-  die "Could not read AIA CA Issuers URL from API server cert. Is cert-manager already installed and the cert issued?"
-fi
-
-ok "Intermediate CA AIA URL: ${AIA_URL}"
-
-# Derive the root URL by replacing the intermediate path with root
-# e.g. https://yr2.i.lencr.org/ → root is at https://yr.i.lencr.org/
-ROOT_URL="$(echo "$AIA_URL" | sed 's|yr2\.|yr.|; s|e[0-9]*\.|r[0-9]*.|; s|r[0-9]*\.|e[0-9]*.| ')"
-# Simpler: use the standard Let's Encrypt AIA root endpoint
-# YR2 → http://yr.i.lencr.org/
-# E5/E6 → http://r.i.lencr.org/
-if echo "$AIA_URL" | grep -q "yr2"; then
+  # API cert is still the cluster's self-signed cert (cert-manager not yet run).
+  # Use the standard Let's Encrypt ECDSA chain (YR2 + Root YR) which is the
+  # default for new Let's Encrypt certs as of 2025+.
+  warn "API cert has no AIA URL — cluster is using its self-signed cert."
+  warn "Falling back to standard Let's Encrypt ECDSA chain (YR2 + Root YR)."
+  AIA_URL="http://yr2.i.lencr.org/"
   ROOT_URL="http://yr.i.lencr.org/"
-elif echo "$AIA_URL" | grep -q "^http.*e[0-9]"; then
-  ROOT_URL="http://r3.i.lencr.org/"
 else
-  ROOT_URL="http://r3.i.lencr.org/"
+  ok "Intermediate CA AIA URL: ${AIA_URL}"
+  if echo "$AIA_URL" | grep -q "yr2"; then
+    ROOT_URL="http://yr.i.lencr.org/"
+  elif echo "$AIA_URL" | grep -q "^http.*e[0-9]"; then
+    ROOT_URL="http://r3.i.lencr.org/"
+  else
+    ROOT_URL="http://r3.i.lencr.org/"
+  fi
 fi
 
 info "Root CA AIA URL: ${ROOT_URL}"
