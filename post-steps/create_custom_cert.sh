@@ -9,7 +9,16 @@ set -euo pipefail
 
 usage() {
   cat <<EOF
-Usage: $0 aws_access_key_id aws_secret_access_key email [hosted_zone_id] [region]
+Usage: $0 aws_access_key_id aws_secret_access_key email [hosted_zone_id] [region] [--include-api]
+
+Default: issues only the *.apps wildcard cert (ingress). Safe for all cluster types.
+
+--include-api  Also issue and apply a cert for api.<cluster>.<domain>.
+               WARNING: Rotating the API server cert breaks kubelet client cert rotation,
+               causing all nodes to go NotReady (User: system:anonymous errors).
+               Only use on AWS IPI clusters where Let's Encrypt CA is already in the
+               RHCOS trust bundle via MachineConfig. On KVM/baremetal, skip this flag
+               and access the API via kubeconfig with the cluster's internal CA.
 
 The script checks oc whoami before it changes the cluster. When KUBECONFIG is unset
 and ~/.kube/config is absent, it uses $HOME/cluster/auth/kubeconfig from the AWS install.
@@ -21,6 +30,17 @@ directory. The 5.0 sample uses the staging directory:
   https://acme-staging-v02.api.letsencrypt.org/directory
 EOF
 }
+
+INCLUDE_API=false
+ARGS=()
+for arg in "$@"; do
+  if [[ "$arg" == "--include-api" ]]; then
+    INCLUDE_API=true
+  else
+    ARGS+=("$arg")
+  fi
+done
+set -- "${ARGS[@]}"
 
 if [[ $# -lt 3 || $# -gt 5 ]]; then
   usage >&2
@@ -210,6 +230,10 @@ spec:
   commonName: "*.${apps_domain}"
   dnsNames:
   - "*.${apps_domain}"
+EOF
+
+if [[ "$INCLUDE_API" == "true" ]]; then
+cat >> "$tmp/certificates.yaml" <<EOF
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -224,12 +248,15 @@ spec:
   dnsNames:
   - ${api_host}
 EOF
+fi
 
 oc apply -f "$tmp/clusterissuer.yaml"
 oc apply -f "$tmp/certificates.yaml"
 
 oc wait -n openshift-ingress certificate/router-certs --for=condition=Ready --timeout=20m
-oc wait -n openshift-config certificate/api-cert --for=condition=Ready --timeout=20m
+if [[ "$INCLUDE_API" == "true" ]]; then
+  oc wait -n openshift-config certificate/api-cert --for=condition=Ready --timeout=20m
+fi
 
 # The ingress chapter puts the signing root in openshift-config and points the proxy at it.
 # Updating trustedCA restarts kubelet and CRI-O on each node.
@@ -252,9 +279,25 @@ oc patch ingresscontroller.operator default \
   -p '{"spec":{"defaultCertificate":{"name":"router-certs"}}}' \
   -n openshift-ingress-operator
 
-oc patch apiserver cluster --type=merge -p "{\"spec\":{\"servingCerts\":{\"namedCertificates\":[{\"names\":[\"${api_host}\"],\"servingCertificate\":{\"name\":\"api-cert\"}}]}}}"
+# Approve any pending CSRs — cert rotation can cause kubelet client certs to
+# queue for re-issuance. Without approval nodes go NotReady (system:anonymous errors).
+echo "Approving any pending CSRs..."
+for _ in $(seq 1 5); do
+  pending=$(oc get csr --no-headers 2>/dev/null | awk '/Pending/{print $1}')
+  if [[ -n "$pending" ]]; then
+    echo "$pending" | xargs oc adm certificate approve 2>/dev/null || true
+  fi
+  sleep 10
+done
+echo "CSR approval complete."
 
-echo "Waiting for kube-apiserver to finish progressing."
+if [[ "$INCLUDE_API" == "true" ]]; then
+  oc patch apiserver cluster --type=merge -p "{\"spec\":{\"servingCerts\":{\"namedCertificates\":[{\"names\":[\"${api_host}\"],\"servingCertificate\":{\"name\":\"api-cert\"}}]}}}"
+  echo "Waiting for kube-apiserver to finish progressing."
+else
+  echo "Skipping API server cert patch (use --include-api to enable)."
+  echo "Waiting for kube-apiserver to finish progressing."
+fi
 for _ in $(seq 1 60); do
   progressing="$(oc get clusteroperators kube-apiserver -o jsonpath='{.status.conditions[?(@.type=="Progressing")].status}')"
   available="$(oc get clusteroperators kube-apiserver -o jsonpath='{.status.conditions[?(@.type=="Available")].status}')"
