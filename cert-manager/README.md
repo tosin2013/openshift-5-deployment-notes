@@ -66,6 +66,32 @@ oc apply -k cert-manager/instances/<provider>/
 
 See [instances/](instances/) for per-cloud provider directories with kustomize-compatible manifests.
 
+## Recovery: 401 errors after API cert rotation
+
+Rotating the API server cert (using `--include-api`) causes the kube-apiserver to roll to a new revision. During or after that rollout, the `extension-apiserver-authentication` ConfigMap in `kube-system` can lose its `requestheader-client-ca-file` key. Without it, `openshift-apiserver` and `oauth-apiserver` reject every aggregated API request with 401 — breaking authentication, monitoring, console, and ingress operators. Additionally, 100+ kubelet CSRs pile up while the cluster is broken, sending all nodes NotReady.
+
+**Do not use `--include-api` on KVM/baremetal clusters.** The `proxy/cluster trustedCA` path only updates egress trust bundles, not the kubelet's CA for verifying the kube-apiserver. Only AWS IPI clusters have the full MachineConfig-based CA distribution needed to safely rotate the API cert.
+
+If you hit this state, recover in order:
+
+```bash
+# 1. Approve all pending CSRs (nodes show NotReady, User: system:anonymous in kubelet logs)
+oc get csr --no-headers | awk '/Pending/{print $1}' | xargs -r oc adm certificate approve
+
+# 2. Force kube-apiserver operator to reconcile — repopulates the configmap
+oc annotate kubeapiserver cluster unsupported-red-hat-internal-force-deployment=true --overwrite
+
+# 3. Wait for both keys to appear in the configmap
+until oc get cm extension-apiserver-authentication -n kube-system \
+  -o jsonpath='{.data.requestheader-client-ca-file}' | grep -q "BEGIN"; do sleep 10; done
+
+# 4. Restart extension API server pods to pick up the new CA
+oc delete pods -n openshift-apiserver --all
+oc delete pods -n openshift-oauth-apiserver --all
+```
+
+Operators recover within a few minutes once the pods restart with the corrected configmap.
+
 ## Product docs
 
 - [cert-manager Operator for Red Hat OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/5.0/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift) (OCP 5.0 Security and compliance)

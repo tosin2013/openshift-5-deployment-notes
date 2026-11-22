@@ -292,6 +292,15 @@ done
 echo "CSR approval complete."
 
 if [[ "$INCLUDE_API" == "true" ]]; then
+  # WARNING: Rotating the API server cert triggers a kube-apiserver revision rollout.
+  # During or after that rollout, extension-apiserver-authentication (kube-system) can
+  # lose its requestheader-client-ca-file key, causing openshift-apiserver and
+  # oauth-apiserver to return 401 on every aggregated API request (authentication,
+  # monitoring, console all go degraded). Recovery requires:
+  #   1. oc get csr --no-headers | awk '/Pending/{print $1}' | xargs -r oc adm certificate approve
+  #   2. oc annotate kubeapiserver cluster unsupported-red-hat-internal-force-deployment=true --overwrite
+  #   3. wait for configmap to repopulate, then restart openshift-apiserver/oauth-apiserver pods
+  # Only use --include-api on AWS IPI clusters. On KVM/baremetal, skip it.
   oc patch apiserver cluster --type=merge -p "{\"spec\":{\"servingCerts\":{\"namedCertificates\":[{\"names\":[\"${api_host}\"],\"servingCertificate\":{\"name\":\"api-cert\"}}]}}}"
   echo "Waiting for kube-apiserver to finish progressing."
 else
